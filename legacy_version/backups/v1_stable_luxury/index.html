@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIORA | Luxury Event Decor & Rentals</title>
+    <meta name="description" content="FIORA is a luxury event decor rental brand specializing in elegant display stands, mirrors, and custom setups.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Cormorant+Garamond:wght@600;700&family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Preloader Fail-safe -->
+    <script>
+        setTimeout(function() {
+            var loader = document.getElementById('preloader');
+            if(loader) loader.classList.add('hidden');
+        }, 1500);
+    </script>
+</head>
+<body>
+    <!-- Scroll Progress Indicator -->
+    <div id="scroll-progress" class="scroll-progress"></div>
+
+    <!-- Luxury Preloader -->
+    <div id="preloader" class="preloader">
+        <div class="preloader-content">
+            <div class="preloader-logo">
+                <img src="/logo.png" alt="FIORA">
+            </div>
+            <div class="preloader-bar"></div>
+        </div>
+    </div>
+
+    <!-- Interactive Background Particles -->
+    <canvas id="particles-canvas" class="particles-canvas"></canvas>
+
+    <!-- Custom Luxury Cursor -->
+    <div id="custom-cursor" class="custom-cursor"></div>
+    <div id="cursor-follower" class="cursor-follower"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#home" class="logo">
+                    <img src="/logo.png" alt="FIORA" class="main-logo">
+                </a>
+                <ul class="nav-links" id="navLinks">
+                    <li class="mobile-menu-close">&times;</li>
+                    <li><a href="#home" data-i18n="nav_home">Home</a></li>
+                    <li><a href="#about" data-i18n="nav_about">About Us</a></li>
+                    <li><a href="#services" data-i18n="nav_services">Services</a></li>
+                    <li><a href="#gallery" data-i18n="nav_gallery">Gallery</a></li>
+                    <li><a href="#how-it-works" data-i18n="nav_how">How to Rent</a></li>
+                    <li><a href="#contact" data-i18n="nav_contact">Contact</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <button id="langSwitch" class="lang-btn">AR | EN</button>
+                    <button id="mobileMenuBtn" class="mobile-menu-btn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container hero-content">
+            <h1 id="heroTitle" data-i18n="hero_title">FIORA | فيورة</h1>
+            <div class="tagline" data-i18n="hero_tagline">LUXURY STARTS HERE</div>
+            <div class="hero-btns">
+                <a href="#gallery" class="btn btn-primary" data-i18n="hero_btn_gallery">View Gallery</a>
+                <a href="#contact" class="btn btn-secondary" data-i18n="hero_btn_contact">Contact Us</a>
+            </div>
+            
+            <div class="features">
+                <div class="feature-item">
+                    <i class="fas fa-key"></i>
+                    <span data-i18n="feat_rental">Rental</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-pen-nib"></i>
+                    <span data-i18n="feat_design">Design</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-paper-plane"></i>
+                    <span data-i18n="feat_delivery">Delivery</span>
+                </div>
+            </div>
+
+            <div class="scroll-indicator">
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Us Section -->
+    <section id="about" class="about reveal">
+        <div class="container">
+            <div class="section-title" data-bg-text="ABOUT">
+                <span class="subtitle" data-i18n="about_sub">Our Story</span>
+                <h2 data-i18n="about_title">About FIORA | عن فيورة</h2>
+            </div>
+            <div class="about-grid">
+                <div class="about-text">
+                    <p data-i18n="about_p">FIORA is a luxury event decor rental brand specializing in elegant display stands, mirrors, and custom setups for engagements, weddings, and special occasions.</p>
+                    
+                    <div class="brand-values">
+                        <div class="value-item"><i class="fas fa-check"></i> <span data-i18n="val_1">Elegance</span></div>
+                        <div class="value-item"><i class="fas fa-check"></i> <span data-i18n="val_2">Quality</span></div>
+                        <div class="value-item"><i class="fas fa-check"></i> <span data-i18n="val_3">Customization</span></div>
+                        <div class="value-item"><i class="fas fa-check"></i> <span data-i18n="val_4">Timely Delivery</span></div>
+                    </div>
+                </div>
+                <div class="about-visual">
+                    <img src="/logo.png" alt="FIORA" class="about-logo">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services reveal">
+        <div class="container">
+            <div class="section-title" data-bg-text="SERVICES">
+                <h2 data-i18n="services_title">Our Services | خدماتنا</h2>
+            </div>
+            <div class="services-grid" id="servicesGrid">
+                <!-- Populated by JS for i18n -->
+            </div>
+            <div class="services-cta">
+                <a href="#contact" class="btn btn-primary" data-i18n="services_btn">Request a Custom Design</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="gallery reveal">
+        <div class="container">
+            <div class="section-title" data-bg-text="WORK">
+                <h2 data-i18n="gallery_title">Our Work | أعمالنا</h2>
+            </div>
+            
+            <div class="gallery-filters">
+                <button class="filter-btn active" data-filter="all" data-i18n="filter_all">All</button>
+                <button class="filter-btn" data-filter="stands" data-i18n="filter_stands">Stands</button>
+                <button class="filter-btn" data-filter="weddings" data-i18n="filter_weddings">Weddings</button>
+                <button class="filter-btn" data-filter="engagement" data-i18n="filter_engagement">Engagement</button>
+                <button class="filter-btn" data-filter="others" data-i18n="filter_others">Others</button>
+                <button class="filter-btn" data-filter="decor" data-i18n="filter_decor">Decor</button>
+                <button class="filter-btn" data-filter="custom" data-i18n="filter_custom">Custom</button>
+            </div>
+
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Gallery items populated by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-title" data-bg-text="PROCESS">
+                <h2 data-i18n="how_title">How It Works | كيف يعمل</h2>
+            </div>
+            
+            <div class="timeline" id="timelineGrid">
+                <!-- Populated by JS for i18n -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Professional Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="contact-minimal reveal">
+                <div class="section-title" data-bg-text="CONTACT">
+                    <h2 data-i18n="contact_title">Get In Touch | تواصل معنا</h2>
+                </div>
+                
+                <div class="contact-icon-row">
+                    <!-- WhatsApp -->
+                    <a href="https://wa.me/0117920233" class="contact-icon-item" title="WhatsApp">
+                        <div class="icon-inner wa"><i class="fab fa-whatsapp"></i></div>
+                    </a>
+
+                    <!-- Location -->
+                    <a href="https://maps.google.com" target="_blank" class="contact-icon-item" title="Location">
+                        <div class="icon-inner lc"><i class="fas fa-map-marker-alt"></i></div>
+                    </a>
+                    
+                    <!-- TikTok -->
+                    <a href="https://tiktok.com/@shahdalmostafa5" target="_blank" class="contact-icon-item" title="TikTok">
+                        <div class="icon-inner tk"><i class="fab fa-tiktok"></i></div>
+                    </a>
+                </div>
+                <p class="contact-hint" data-i18n="contact_sub">We are here to bring your vision to life</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Luxury Footer -->
+    <footer class="luxury-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <img src="/logo.png" alt="FIORA" class="footer-logo-img">
+                    <p data-i18n="footer_about">Crafting elegance for your most precious moments. Luxury event decor and rentals in Sudan.</p>
+                </div>
+                <div class="footer-links">
+                    <h5 data-i18n="footer_explore">Explore</h5>
+                    <ul>
+                        <li><a href="#about" data-i18n="nav_about">About Us</a></li>
+                        <li><a href="#services" data-i18n="nav_services">Services</a></li>
+                        <li><a href="#gallery" data-i18n="nav_gallery">Gallery</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h5 data-i18n="footer_services">Our Niche</h5>
+                    <ul>
+                        <li data-i18n="footer_n1">Weddings</li>
+                        <li data-i18n="footer_n2">Engagements</li>
+                        <li data-i18n="footer_n3">Corporate Events</li>
+                    </ul>
+                </div>
+                <div class="footer-social">
+                    <h5 data-i18n="footer_social">Follow Us</h5>
+                    <div class="social-icons">
+                        <a href="https://tiktok.com/@shahdalmostafa5" target="_blank"><i class="fab fa-tiktok"></i></a>
+                        <a href="https://wa.me/0117920233"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 FIORA. <span data-i18n="footer_copy">All rights reserved.</span></p>
+                <p class="designer-sig">LUXURY STARTS HERE</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top -->
+    <button id="backToTop" class="back-to-top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- Luxury Lightbox -->
+    <div id="lightbox" class="lightbox">
+        <span class="lightbox-close">&times;</span>
+        <img class="lightbox-content" id="lightbox-img">
+        <div id="lightbox-caption"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>

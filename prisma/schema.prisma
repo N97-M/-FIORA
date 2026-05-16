@@ -1,0 +1,170 @@
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 1. Admin Users
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  username    String   @unique
+  displayName String   @default("Admin")
+  password    String
+  role        String   @default("EDITOR") // SUPERADMIN, EDITOR, GALLERY_MANAGER
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// 2. Hero Section
+model Hero {
+  id             Int      @id @default(1)
+  title_en       String   @default("FIORA | Luxury Event Decor")
+  title_ar       String   @default("فيورة | لتنسيق المناسبات")
+  tagline_en     String   @default("LUXURY STARTS HERE")
+  tagline_ar     String   @default("الفخامة تبدأ من هنا")
+  btn_gallery_en String   @default("View Gallery")
+  btn_gallery_ar String   @default("مشاهدة المعرض")
+  btn_contact_en String   @default("Contact Us")
+  btn_contact_ar String   @default("تواصل معنا")
+  
+  // Hero Features
+  feat_1_en      String   @default("Rental")
+  feat_1_ar      String   @default("تأجير")
+  feat_2_en      String   @default("Design")
+  feat_2_ar      String   @default("تصميم")
+  feat_3_en      String   @default("Delivery")
+  feat_3_ar      String   @default("توصيل")
+
+  // Background Media
+  bg_type        String   @default("IMAGE") // IMAGE or VIDEO
+  image_url      String   @default("/hero-bg.jpg")
+  overlay_opacity Float   @default(0.5)
+  updatedAt      DateTime @updatedAt
+}
+
+// 3. Navbar Settings
+model Navbar {
+  id                Int      @id @default(1)
+  logo_url          String   @default("/logo.png")
+  favicon_url       String   @default("/favicon.ico")
+  
+  // Navigation Links
+  nav_home_en       String   @default("Home")
+  nav_home_ar       String   @default("الرئيسية")
+  nav_about_en      String   @default("About Us")
+  nav_about_ar      String   @default("من نحن")
+  nav_services_en   String   @default("Services")
+  nav_services_ar   String   @default("خدماتنا")
+  nav_gallery_en    String   @default("Gallery")
+  nav_gallery_ar    String   @default("أعمالنا")
+  nav_how_en        String   @default("How to Rent")
+  nav_how_ar        String   @default("كيفية التأجير")
+  nav_contact_en    String   @default("Contact")
+  nav_contact_ar    String   @default("اتصل بنا")
+
+  sticky_enabled    Boolean  @default(true)
+  lang_switch_show  Boolean  @default(true)
+  updatedAt         DateTime @updatedAt
+}
+
+// 4. About Section
+model About {
+  id           Int      @id @default(1)
+  title_en     String   @default("About FIORA")
+  title_ar     String   @default("عن فيورة")
+  content_en   String   @default("FIORA is a luxury event decor rental brand...")
+  content_ar   String   @default("فيورة هي علامة تجارية فاخرة لتأجير ديكورات المناسبات...")
+  image_url    String   @default("/about-img.jpg")
+  values       Value[]
+  updatedAt    DateTime @updatedAt
+}
+
+model Value {
+  id        String @id @default(uuid())
+  text_en   String
+  text_ar   String
+  aboutId   Int
+  about     About  @relation(fields: [aboutId], references: [id])
+}
+
+// 5. Services
+model Service {
+  id          String   @id @default(uuid())
+  title_en    String
+  title_ar    String
+  desc_en     String
+  desc_ar     String
+  icon        String   @default("fas fa-star")
+  image_url   String?
+  order       Int      @default(0)
+  isVisible   Boolean  @default(true)
+  updatedAt   DateTime @updatedAt
+}
+
+// 6. Gallery Categories
+model Category {
+  id        String    @id @default(uuid())
+  name_en   String
+  name_ar   String
+  order     Int       @default(0)
+  items     GalleryItem[]
+}
+
+// 7. Gallery Items
+model GalleryItem {
+  id          String   @id @default(uuid())
+  title_en    String
+  title_ar    String
+  desc_en     String
+  desc_ar     String
+  image_url   String
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  isFeatured  Boolean  @default(false)
+  isVisible   Boolean  @default(true)
+  order       Int      @default(0)
+  updatedAt   DateTime @updatedAt
+}
+
+// 8. Booking & Socials
+model Settings {
+  id               Int      @id @default(1)
+  whatsapp_number  String   @default("249123456789")
+  whatsapp_msg_en  String   @default("Hello FIORA, I would like to inquire about...")
+  whatsapp_msg_ar  String   @default("مرحباً فيورة، أود الاستفسار عن...")
+  phone_number     String   @default("249123456789")
+  tiktok_url       String   @default("#")
+  instagram_url    String   @default("#")
+  snapchat_url     String   @default("#")
+  status           String   @default("AVAILABLE") // AVAILABLE, BUSY, CLOSED
+  updatedAt        DateTime @updatedAt
+}
+
+// 9. Theme Settings
+model Theme {
+  id               Int      @id @default(1)
+  primary_gold     String   @default("#DBC07E")
+  bg_dark          String   @default("#0a0a0a")
+  text_white       String   @default("#ffffff")
+  border_radius    String   @default("15px")
+  glass_opacity    Float    @default(0.1)
+  updatedAt        DateTime @updatedAt
+}
+
+// 10. SEO
+model SEO {
+  id               Int      @id @default(1)
+  meta_title_en    String   @default("FIORA | Luxury Event Decor")
+  meta_title_ar    String   @default("فيورة | لتنسيق المناسبات")
+  meta_desc_en     String   @default("Luxury event decor rentals in Sudan.")
+  meta_desc_ar     String   @default("تأجير ديكورات المناسبات الفاخرة في السودان.")
+  og_image         String?
+  keywords         String   @default("luxury, event, decor, sudan, fiora")
+  updatedAt        DateTime @updatedAt
+}
