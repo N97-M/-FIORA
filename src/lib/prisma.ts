@@ -1,4 +1,6 @@
 import { PrismaClient } from '@prisma/client'
+import { PrismaLibSql } from '@prisma/adapter-libsql'
+import { createClient } from '@libsql/client'
 import fs from 'fs'
 import path from 'path'
 
@@ -30,21 +32,36 @@ if (!dbUrl || dbUrl.startsWith("file:")) {
       }
     }
     dbUrl = `file:${tmpDbPath}`
+
+    try {
+      const tempClient = createClient({ url: dbUrl })
+      tempClient.execute('PRAGMA journal_mode = DELETE;').then(() => {
+        tempClient.execute('PRAGMA locking_mode = NORMAL;').then(() => {
+          tempClient.close()
+        }).catch(() => tempClient.close())
+      }).catch(() => tempClient.close())
+    } catch (err) {
+      console.error('Error setting pragma on /tmp/dev.db:', err)
+    }
+
   } else {
     dbUrl = "file:./dev.db"
   }
 }
+
+process.env.DATABASE_URL = dbUrl
+
+const adapter = new PrismaLibSql({
+  url: dbUrl,
+  authToken: process.env.TURSO_AUTH_TOKEN || process.env.DATABASE_AUTH_TOKEN || "dummy-token",
+})
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient }
 
 export const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
-    datasources: {
-      db: {
-        url: dbUrl,
-      },
-    },
+    adapter,
     log: ['query'],
   })
 
