@@ -4,6 +4,13 @@ import { createClient } from '@libsql/client'
 import fs from 'fs'
 import path from 'path'
 
+if (process.env.NODE_ENV === 'production') {
+  process.env.TMPDIR = '/tmp'
+  process.env.SQLITE_TMPDIR = '/tmp'
+  process.env.TMP = '/tmp'
+  process.env.TEMP = '/tmp'
+}
+
 let dbUrl = process.env.DATABASE_URL
 
 if (!dbUrl || dbUrl.startsWith("file:")) {
