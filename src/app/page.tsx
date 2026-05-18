@@ -139,7 +139,7 @@ export default async function HomePage() {
                   <h2 data-i18n="services_title">خدماتنا | Our Services</h2>
               </div>
               <div className="services-grid" id="servicesGrid">
-                  {services.map((service) => (
+                  {services.map((service: any) => (
                     <div key={service.id} className="service-card">
                         <i className={service.icon}></i>
                         <h3>
@@ -165,7 +165,7 @@ export default async function HomePage() {
               
               <div className="gallery-filters">
                   <button className="filter-btn active" data-filter="all" data-i18n="filter_all">الكل</button>
-                  {categories.filter(cat => cat.name_en !== 'All').map(cat => (
+                  {categories.filter((cat: any) => cat.name_en !== 'All').map((cat: any) => (
                     <button key={cat.id} className="filter-btn" data-filter={cat.id}>
                         <span className="ar-text">{cat.name_ar}</span>
                         <span className="en-text">{cat.name_en}</span>
@@ -174,7 +174,7 @@ export default async function HomePage() {
               </div>
 
               <div className="gallery-grid" id="galleryGrid">
-                  {gallery.map(item => (
+                  {gallery.map((item: any) => (
                     <div key={item.id} className={`gallery-card ${item.categoryId}`}>
                         <div className="gallery-image">
                             <img src={item.image_url} alt={item.title_en} />
