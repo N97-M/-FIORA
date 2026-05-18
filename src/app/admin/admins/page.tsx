@@ -197,7 +197,7 @@ export default async function AdminUsersPage() {
             </div>
           )}
 
-          {users.map(user => (
+          {users.map((user: any) => (
             <div key={user.id} style={{
               background: '#0d0d0d',
               border: `1px solid ${user.isActive ? '#1e2e1e' : '#2e1e1e'}`,

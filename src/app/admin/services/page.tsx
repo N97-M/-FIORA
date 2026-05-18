@@ -74,7 +74,7 @@ export default async function AdminServices() {
       </div>
 
       <div style={{ display: 'grid', gap: '20px' }}>
-        {services.map(service => (
+        {services.map((service: any) => (
           <div key={service.id} style={{ background: '#111', padding: '20px', borderRadius: '10px', border: '1px solid #222', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: '0.3s' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px' }}>
               <i className={service.icon} style={{ fontSize: '28px', color: '#DBC07E', marginTop: '5px' }}></i>
