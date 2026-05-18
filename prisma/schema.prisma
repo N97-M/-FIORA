@@ -10,7 +10,7 @@ datasource db {
 // 1. Admin Users
 model User {
   id          String   @id @default(uuid())
-  email       String   @unique
+  email       String   @unique @default("admin@fiora.com")
   username    String   @unique
   displayName String   @default("Admin")
   password    String
