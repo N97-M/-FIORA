@@ -1,12 +1,11 @@
-import { PrismaClient } from '@prisma/client'
-const prisma = new PrismaClient()
+import { prisma } from '../src/lib/prisma'
 
 async function main() {
   // 1. Create Initial User
   await prisma.user.upsert({
     where: { username: 'admin' },
     update: {},
-    create: { username: 'admin', password: 'admin123', role: 'SUPERADMIN' }
+    create: { email: 'admin@fiora.com', username: 'admin', password: 'admin123', role: 'SUPERADMIN' }
   })
 
   // 2. Hero Section
