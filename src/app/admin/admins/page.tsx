@@ -117,8 +117,8 @@ export default async function AdminUsersPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
         {[
           { label: 'Total Admins',  value: users.length,                                    icon: 'fa-users',         color: '#DBC07E' },
-          { label: 'Active',        value: users.filter(u => u.isActive).length,             icon: 'fa-check-circle',  color: '#34d399' },
-          { label: 'Super Admins',  value: users.filter(u => u.role === 'SUPERADMIN').length, icon: 'fa-crown',         color: '#f59e0b' },
+          { label: 'Active',        value: users.filter((u: any) => u.isActive).length,             icon: 'fa-check-circle',  color: '#34d399' },
+          { label: 'Super Admins',  value: users.filter((u: any) => u.role === 'SUPERADMIN').length, icon: 'fa-crown',         color: '#f59e0b' },
         ].map(stat => (
           <div key={stat.label} style={{ ...cardStyle, display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: `${stat.color}18`, display: 'grid', placeItems: 'center', flexShrink: 0 }}>
