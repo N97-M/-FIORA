@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "npx cross-env PRISMA_CLIENT_ENGINE_TYPE=binary prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate"
+    "postinstall": "npx cross-env PRISMA_CLIENT_ENGINE_TYPE=binary prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^7.8.0",
