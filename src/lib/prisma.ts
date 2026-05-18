@@ -1,6 +1,4 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaLibSql } from '@prisma/adapter-libsql'
-import { createClient } from '@libsql/client'
 import fs from 'fs'
 import path from 'path'
 
@@ -37,17 +35,16 @@ if (!dbUrl || dbUrl.startsWith("file:")) {
   }
 }
 
-const adapter = new PrismaLibSql({
-  url: dbUrl,
-  authToken: process.env.TURSO_AUTH_TOKEN || process.env.DATABASE_AUTH_TOKEN || "dummy-token",
-})
-
 const globalForPrisma = global as unknown as { prisma: PrismaClient }
 
 export const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
-    adapter,
+    datasources: {
+      db: {
+        url: dbUrl,
+      },
+    },
     log: ['query'],
   })
 
