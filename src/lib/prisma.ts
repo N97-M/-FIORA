@@ -30,12 +30,10 @@ if (!dbUrl || dbUrl.startsWith("file:")) {
   }
 }
 
-const libsql = createClient({
+const adapter = new PrismaLibSql({
   url: dbUrl,
   authToken: process.env.TURSO_AUTH_TOKEN || process.env.DATABASE_AUTH_TOKEN || "dummy-token",
 })
-
-const adapter = new PrismaLibSql(libsql)
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient }
 
