@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma'
 import Script from 'next/script'
 
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage() {
   // Fetch Data from Database
   const hero = await prisma.hero.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } })

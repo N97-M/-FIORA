@@ -1,5 +1,7 @@
 import AdminSidebar from '@/components/AdminSidebar'
 
+export const dynamic = 'force-dynamic';
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div dir="ltr" style={{ direction: 'ltr', background: '#050505', minHeight: '100vh', color: '#fff', padding: '40px' }}>

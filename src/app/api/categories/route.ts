@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { revalidatePath } from 'next/cache'
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,6 +10,8 @@ export async function POST(request: NextRequest) {
     }
     const count = await prisma.category.count()
     const category = await prisma.category.create({ data: { name_ar, name_en, order: count } })
+    revalidatePath('/')
+    revalidatePath('/admin/gallery')
     return NextResponse.json(category)
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 })
@@ -25,6 +28,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: `Cannot delete: ${count} image(s) use this category` }, { status: 400 })
     }
     await prisma.category.delete({ where: { id } })
+    revalidatePath('/')
+    revalidatePath('/admin/gallery')
     return NextResponse.json({ success: true })
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 })
