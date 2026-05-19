@@ -1,7 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
-import { writeFile, mkdir } from 'fs/promises'
-import path from 'path'
+
 
 export default async function AdminDashboard() {
   const hero = await prisma.hero.findFirst()
@@ -16,15 +15,25 @@ export default async function AdminDashboard() {
     if (file && file.size > 0) {
       const buffer = Buffer.from(await file.arrayBuffer())
       const filename = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
-      const uploadDir = path.join(process.cwd(), 'public', 'uploads')
       
-      try {
-        await mkdir(uploadDir, { recursive: true })
-      } catch (e) {} // Ignore if folder exists
-      
-      const filepath = path.join(uploadDir, filename)
-      await writeFile(filepath, buffer)
-      finalImageUrl = `/uploads/${filename}`
+      const { supabaseAdmin } = await import('@/lib/supabase')
+      const { error } = await supabaseAdmin.storage
+        .from('uploads')
+        .upload(`public/${filename}`, buffer, {
+          contentType: file.type,
+          upsert: false
+        })
+
+      if (error) {
+        console.error('Supabase upload error:', error)
+        throw new Error('Failed to upload hero image')
+      }
+
+      const { data: publicUrlData } = supabaseAdmin.storage
+        .from('uploads')
+        .getPublicUrl(`public/${filename}`)
+
+      finalImageUrl = publicUrlData.publicUrl
     }
 
     const data = {
