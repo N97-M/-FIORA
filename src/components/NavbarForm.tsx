@@ -2,6 +2,14 @@
 
 import { useState } from 'react'
 
+const InputField = ({ label, name, defaultValue }: { label: string, name: string, defaultValue?: string }) => (
+  <div style={{ display: 'grid', gap: '8px' }}>
+    <label style={{ color: '#aaa', fontSize: '13px' }}>{label}</label>
+    <input name={name} defaultValue={defaultValue} style={{ padding: '10px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '6px', width: '100%', boxSizing: 'border-box' }} />
+  </div>
+)
+
+
 export default function NavbarForm({ initialNavbar }: { initialNavbar: any }) {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
@@ -56,12 +64,7 @@ export default function NavbarForm({ initialNavbar }: { initialNavbar: any }) {
     }
   }
 
-  const InputField = ({ label, name, defaultValue }: any) => (
-    <div style={{ display: 'grid', gap: '8px' }}>
-      <label style={{ color: '#aaa', fontSize: '13px' }}>{label}</label>
-      <input name={name} defaultValue={defaultValue} style={{ padding: '10px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '6px', width: '100%', boxSizing: 'border-box' }} />
-    </div>
-  )
+
 
   return (
     <>
@@ -80,7 +83,7 @@ export default function NavbarForm({ initialNavbar }: { initialNavbar: any }) {
       )}
 
       <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '30px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+        <div className="admin-grid-2">
           <div style={{ display: 'grid', gap: '20px', background: 'rgba(0,0,0,0.3)', padding: '20px', borderRadius: '10px', border: '1px solid #222' }}>
             <h4 style={{ color: '#DBC07E' }}>Arabic Menu Links</h4>
             <InputField label="Home" name="nav_home_ar" defaultValue={initialNavbar?.nav_home_ar} />

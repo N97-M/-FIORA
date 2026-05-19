@@ -99,7 +99,7 @@ export default function ServicesForm({ initialServices }: { initialServices: Ser
 
         <form onSubmit={handleAddService} style={{ display: 'grid', gap: '20px' }}>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          <div className="admin-grid-2">
             {/* Arabic Fields */}
             <div style={{ display: 'grid', gap: '15px', background: 'rgba(0,0,0,0.3)', padding: '15px', borderRadius: '8px', border: '1px solid #222' }}>
                 <h4 style={{ color: '#DBC07E', fontSize: '16px' }}>Arabic Content</h4>

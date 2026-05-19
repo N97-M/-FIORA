@@ -32,7 +32,7 @@ export default function AdminSidebar() {
   } as React.CSSProperties)
 
   return (
-    <div style={{ width: '250px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '6px' }}>
       {links.map(link => (
         <Link key={link.href} href={link.href} style={linkStyle(link.href)}>
           <i className={`fas ${link.icon}`}></i>

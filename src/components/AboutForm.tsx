@@ -68,7 +68,7 @@ export default function AboutForm({ initialAbout }: { initialAbout: any }) {
 
       <form onSubmit={handleSubmit} encType="multipart/form-data" style={{ display: 'grid', gap: '25px' }}>
         
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
+        <div className="admin-grid-2" style={{ gap: '30px' }}>
             {/* Arabic */}
             <div style={{ display: 'grid', gap: '15px', background: 'rgba(0,0,0,0.3)', padding: '20px', borderRadius: '10px', border: '1px solid #222' }}>
                 <h4 style={{ color: '#DBC07E' }}>Arabic Content</h4>

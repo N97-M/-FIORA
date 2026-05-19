@@ -212,7 +212,7 @@ export default function AdminsForm({ initialUsers }: { initialUsers: User[] }) {
       )}
 
       {/* ── Stats Row ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+      <div className="admin-grid-3">
         {[
           { label: 'Total Admins',  value: users.length,                                    icon: 'fa-users',         color: '#DBC07E' },
           { label: 'Active',        value: users.filter((u: User) => u.isActive).length,             icon: 'fa-check-circle',  color: '#34d399' },
@@ -238,7 +238,7 @@ export default function AdminsForm({ initialUsers }: { initialUsers: User[] }) {
         </h3>
 
         <form onSubmit={handleCreate} style={{ display: 'grid', gap: '20px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          <div className="admin-grid-2">
             <div style={{ display: 'grid', gap: '8px' }}>
               <label style={{ fontSize: '12px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Display Name</label>
               <input name="displayName" placeholder="e.g. Mohamed Ali" style={inputStyle} />
@@ -259,7 +259,7 @@ export default function AdminsForm({ initialUsers }: { initialUsers: User[] }) {
 
           <div style={{ display: 'grid', gap: '8px' }}>
             <label style={{ fontSize: '12px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Permission Level</label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+            <div className="admin-grid-3">
               {ROLES.map(role => (
                 <label key={role.value} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '14px', background: '#0d0d0d', border: '1px solid #2a2a2a', borderRadius: '10px', cursor: 'pointer' }}>
                   <input type="radio" name="role" value={role.value} defaultChecked={role.value === 'EDITOR'} style={{ marginTop: '2px', accentColor: role.color }} />
@@ -312,14 +312,11 @@ export default function AdminsForm({ initialUsers }: { initialUsers: User[] }) {
           )}
 
           {users.map((user: User) => (
-            <div key={user.id} style={{
+            <div key={user.id} className="admin-list-item" style={{
               background: '#0d0d0d',
               border: `1px solid ${user.isActive ? '#1e2e1e' : '#2e1e1e'}`,
               borderRadius: '12px',
               padding: '20px',
-              display: 'grid',
-              gridTemplateColumns: '1fr auto',
-              gap: '20px',
               alignItems: 'start',
               opacity: user.isActive ? 1 : 0.6,
             }}>
@@ -354,7 +351,7 @@ export default function AdminsForm({ initialUsers }: { initialUsers: User[] }) {
               </div>
 
               {/* Right: Actions */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '260px' }}>
+              <div className="admin-flex-actions">
                 {/* Change Role */}
                 <form onSubmit={handleChangeRole} style={{ display: 'flex', gap: '8px' }}>
                   <input type="hidden" name="id" value={user.id} />

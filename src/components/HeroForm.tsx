@@ -2,6 +2,14 @@
 
 import { useState } from 'react'
 
+const InputField = ({ label, name, defaultValue }: { label: string, name: string, defaultValue?: string }) => (
+  <div style={{ display: 'grid', gap: '8px' }}>
+    <label style={{ color: '#aaa', fontSize: '13px' }}>{label}</label>
+    <input name={name} defaultValue={defaultValue} style={{ padding: '10px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '6px', width: '100%', boxSizing: 'border-box' }} />
+  </div>
+)
+
+
 export default function HeroForm({ initialHero }: { initialHero: any }) {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
@@ -49,13 +57,6 @@ export default function HeroForm({ initialHero }: { initialHero: any }) {
     }
   }
 
-  const InputField = ({ label, name, defaultValue }: any) => (
-    <div style={{ display: 'grid', gap: '8px' }}>
-      <label style={{ color: '#aaa', fontSize: '13px' }}>{label}</label>
-      <input name={name} defaultValue={defaultValue} style={{ padding: '10px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '6px', width: '100%', boxSizing: 'border-box' }} />
-    </div>
-  )
-
   return (
     <>
       <h2 style={{ marginBottom: '30px', color: '#DBC07E', fontFamily: 'Playfair Display' }}>Manage Hero Section</h2>
@@ -76,7 +77,7 @@ export default function HeroForm({ initialHero }: { initialHero: any }) {
         {/* Background Settings */}
         <div style={{ background: 'rgba(0,0,0,0.3)', padding: '20px', borderRadius: '10px', border: '1px solid #222' }}>
           <h4 style={{ marginBottom: '15px', color: '#DBC07E' }}>Background Settings</h4>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr', gap: '20px' }}>
+          <div className="admin-grid-3">
             <div style={{ display: 'grid', gap: '8px' }}>
               <label style={{ color: '#aaa', fontSize: '13px' }}>Background Type</label>
               <select name="bg_type" defaultValue={initialHero?.bg_type || 'IMAGE'} style={{ padding: '10px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '6px' }}>
@@ -96,7 +97,7 @@ export default function HeroForm({ initialHero }: { initialHero: any }) {
         </div>
 
         {/* Text Settings */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+        <div className="admin-grid-2">
           <div style={{ display: 'grid', gap: '20px', background: 'rgba(0,0,0,0.3)', padding: '20px', borderRadius: '10px', border: '1px solid #222' }}>
             <h4 style={{ color: '#DBC07E' }}>Arabic Content</h4>
             <InputField label="Title" name="title_ar" defaultValue={initialHero?.title_ar} />

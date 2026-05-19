@@ -752,9 +752,24 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
         left: 30px;
     }
     
-    .hero { min-height: 80vh; padding: 120px 0 60px; }
-    .hero-content h1 { font-size: 48px; margin-bottom: 10px; }
-    .tagline { font-size: 14px; letter-spacing: 3px; gap: 8px; margin-bottom: 25px; opacity: 0.9; }
+    .hero { 
+        min-height: 100vh; 
+        padding: 100px 20px 40px; 
+        justify-content: center;
+        align-items: center;
+        background-attachment: scroll !important;
+        background-position: center center !important;
+    }
+    .hero-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        text-align: center;
+    }
+    .hero-content h1 { font-size: 42px; margin-bottom: 10px; line-height: 1.2; }
+    .tagline { font-size: 14px; letter-spacing: 3px; gap: 8px; margin-bottom: 25px; opacity: 0.9; text-align: center; justify-content: center; }
     .tagline::before, .tagline::after { width: 15px; }
     
     .hero-btns { flex-direction: column; gap: 12px; width: 100%; max-width: 240px; }
@@ -889,3 +904,60 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
 html[lang="en"] .ar-text { display: none !important; }
 html[lang="ar"] .en-text { display: none !important; }
 
+/* Admin Dashboard Layout */
+.admin-layout-grid {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 40px;
+    align-items: start;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 50px;
+    border-bottom: 1px solid rgba(219,192,126,0.1);
+    padding-bottom: 20px;
+}
+
+.admin-content-card {
+    background: rgba(255,255,255,0.02);
+    padding: 40px;
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    overflow-x: auto;
+}
+
+@media (max-width: 1024px) {
+    .admin-layout-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-header {
+        flex-direction: column;
+        gap: 20px;
+        align-items: flex-start;
+        text-align: left;
+    }
+    .admin-content-card {
+        padding: 20px;
+    }
+}
+
+/* Admin Dashboard Forms Responsive Utilities */
+.admin-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.admin-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.admin-list-item { display: grid; grid-template-columns: 1fr auto; gap: 20px; }
+.admin-flex-actions { display: flex; flex-direction: column; gap: 10px; min-width: 260px; }
+
+@media (max-width: 768px) {
+    .admin-grid-3 { grid-template-columns: 1fr; }
+    .admin-grid-2 { grid-template-columns: 1fr; }
+    .admin-list-item { grid-template-columns: 1fr; }
+    .admin-flex-actions { min-width: 100%; }
+}

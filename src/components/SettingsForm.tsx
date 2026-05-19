@@ -69,7 +69,7 @@ export default function SettingsForm({ initialSettings }: { initialSettings: any
 
       <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '25px' }}>
         
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+        <div className="admin-grid-2">
             <div style={{ display: 'grid', gap: '10px' }}>
                 <label style={{ color: '#aaa', fontSize: '14px' }}>WhatsApp Number</label>
                 <input name="whatsapp_number" defaultValue={initialSettings?.whatsapp_number} required style={{ padding: '12px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '8px', width: '100%', boxSizing: 'border-box' }} />
@@ -85,7 +85,7 @@ export default function SettingsForm({ initialSettings }: { initialSettings: any
         </div>
 
         {/* WhatsApp Default Messages */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: 'rgba(0,0,0,0.3)', padding: '20px', borderRadius: '10px', border: '1px solid #222' }}>
+        <div className="admin-grid-2" style={{ background: 'rgba(0,0,0,0.3)', padding: '20px', borderRadius: '10px', border: '1px solid #222' }}>
             <div style={{ display: 'grid', gap: '10px' }}>
                 <label style={{ color: '#DBC07E', fontSize: '14px' }}>Default WhatsApp Message (AR)</label>
                 <textarea name="whatsapp_msg_ar" defaultValue={initialSettings?.whatsapp_msg_ar} rows={3} style={{ padding: '12px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '8px', resize: 'vertical', width: '100%', boxSizing: 'border-box' }} />
