@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import path from 'path'
+import { supabaseAdmin } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,16 +19,31 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(await file.arrayBuffer())
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
     const filename = `${Date.now()}-${safeName}`
-    const isProd = process.env.NODE_ENV === 'production'
-    const uploadDir = isProd 
-      ? path.join('/tmp', 'uploads')
-      : path.join(process.cwd(), 'public', 'uploads')
+    
+    // Check if Supabase URL is configured
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+       console.error('Supabase is not configured.')
+       return NextResponse.json({ error: 'Storage backend not configured' }, { status: 500 })
+    }
 
-    await mkdir(uploadDir, { recursive: true })
-    await writeFile(path.join(uploadDir, filename), buffer)
+    const { data, error } = await supabaseAdmin.storage
+      .from('uploads')
+      .upload(`public/${filename}`, buffer, {
+        contentType: file.type,
+        cacheControl: '3600',
+        upsert: false
+      })
 
-    const url = isProd ? `/api/file?path=${filename}` : `/uploads/${filename}`
-    return NextResponse.json({ url })
+    if (error) {
+      console.error('Supabase upload error:', error)
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    const { data: publicUrlData } = supabaseAdmin.storage
+      .from('uploads')
+      .getPublicUrl(`public/${filename}`)
+
+    return NextResponse.json({ url: publicUrlData.publicUrl })
   } catch (err: any) {
     console.error('Upload error:', err)
     return NextResponse.json({ error: err.message }, { status: 500 })
