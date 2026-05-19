@@ -82,8 +82,21 @@ export default function GalleryClient({ gallery, categories: initialCategories }
         const uploadForm = new FormData()
         uploadForm.append('file', file)
         const res = await fetch('/api/upload', { method: 'POST', body: uploadForm })
-        const data = await res.json()
-        if (!res.ok) throw new Error(data.error || 'Upload failed')
+        let data: any = {}
+        if (res.ok) {
+          data = await res.json()
+        } else {
+          if (res.status === 413) {
+            throw new Error('The selected image is too large (Vercel limits uploads to 4.5MB). Please compress the image or use a smaller file.')
+          }
+          try {
+            data = await res.json()
+          } catch {
+            const text = await res.text()
+            throw new Error(text || 'Upload failed')
+          }
+          throw new Error(data.error || 'Upload failed')
+        }
         imageUrl = data.url
       } else {
         throw new Error('Please select an image to upload.')

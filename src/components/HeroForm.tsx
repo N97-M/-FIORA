@@ -21,9 +21,19 @@ export default function HeroForm({ initialHero }: { initialHero: any }) {
         body: formData
       })
 
-      const result = await res.json()
-
-      if (!res.ok) {
+      let result: any = {}
+      if (res.ok) {
+        result = await res.json()
+      } else {
+        if (res.status === 413) {
+          throw new Error('The selected background media file is too large (Vercel limits uploads to 4.5MB). Please compress the file or use a smaller version.')
+        }
+        try {
+          result = await res.json()
+        } catch {
+          const text = await res.text()
+          throw new Error(text || 'Something went wrong')
+        }
         throw new Error(result.error || 'Something went wrong')
       }
 
