@@ -255,6 +255,7 @@ const initApp = () => {
         if (!grid) return;
         
         const rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
+        const rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('column-gap')) || 12;
         
         let contentHeight = 0;
         const imgWrapper = item.querySelector('.gallery-image');
@@ -268,7 +269,7 @@ const initApp = () => {
         if (info) contentHeight += info.getBoundingClientRect().height;
         
         // Account for grid-gap spacing inside the span
-        const rowSpan = Math.ceil((contentHeight + 20) / rowHeight);
+        const rowSpan = Math.ceil((contentHeight + rowGap) / rowHeight);
         item.style.gridRowEnd = "span " + rowSpan;
     }
 
