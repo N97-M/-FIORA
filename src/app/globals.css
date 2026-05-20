@@ -430,7 +430,7 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
     position: relative;
     width: 800px;
     height: 400px; /* horizontal ellipse */
-    margin: 60px auto 0;
+    margin: 120px auto 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -628,7 +628,7 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
         position: relative;
         width: 100%;
         max-width: 360px;
-        margin: 40px auto 0;
+        margin: 80px auto 0;
         overflow: visible; /* Show floating stacked cards */
         height: 380px; /* Sized for 3 cards stack */
         touch-action: translateY; /* Allow normal page scroll, custom vertical swipe handled */
