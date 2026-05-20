@@ -134,8 +134,8 @@ export default async function HomePage() {
               <div className="section-title" data-bg-text="ABOUT">
                   <span className="subtitle" data-i18n="about_sub">قصتنا</span>
                   <h2>
-                      <span className="ar-text">{about?.title_ar}</span>
-                      <span className="en-text">{about?.title_en}</span>
+                      <span className="ar-text">{navbar?.nav_about_ar}</span>
+                      <span className="en-text">{navbar?.nav_about_en}</span>
                   </h2>
               </div>
               <div className="about-grid">
@@ -161,7 +161,10 @@ export default async function HomePage() {
       <section id="services" className="services reveal">
           <div className="container">
               <div className="section-title" data-bg-text="SERVICES">
-                  <h2 data-i18n="services_title">خدماتنا | Our Services</h2>
+                  <h2>
+                      <span className="ar-text">{navbar?.nav_services_ar}</span>
+                      <span className="en-text">{navbar?.nav_services_en}</span>
+                  </h2>
               </div>
               
               {/* Circular Services Layout (Desktop/Tablet) */}
@@ -248,7 +251,10 @@ export default async function HomePage() {
       <section id="gallery" className="gallery reveal">
           <div className="container">
               <div className="section-title" data-bg-text="WORK">
-                  <h2 data-i18n="gallery_title">أعمالنا | Our Work</h2>
+                  <h2>
+                      <span className="ar-text">{navbar?.nav_gallery_ar}</span>
+                      <span className="en-text">{navbar?.nav_gallery_en}</span>
+                  </h2>
               </div>
               
               <div className="gallery-filters">
@@ -306,7 +312,10 @@ export default async function HomePage() {
       <section id="how-it-works" className="how-it-works reveal">
           <div className="container">
               <div className="section-title" data-bg-text="PROCESS">
-                  <h2 data-i18n="how_title">كيف يعمل | How It Works</h2>
+                  <h2>
+                      <span className="ar-text">{navbar?.nav_how_ar}</span>
+                      <span className="en-text">{navbar?.nav_how_en}</span>
+                  </h2>
               </div>
               <div className="timeline" id="timelineGrid">
                   {/* Timeline is populated dynamically by script.js but we will put it statically to prevent empty flashes */}
@@ -347,7 +356,10 @@ export default async function HomePage() {
           <div className="container">
               <div className="contact-minimal reveal">
                   <div className="section-title" data-bg-text="CONTACT">
-                      <h2 data-i18n="contact_title">تواصل معنا | Get In Touch</h2>
+                      <h2>
+                          <span className="ar-text">{navbar?.nav_contact_ar}</span>
+                          <span className="en-text">{navbar?.nav_contact_en}</span>
+                      </h2>
                   </div>
                   
                   <div className="contact-icon-row">
@@ -387,9 +399,9 @@ export default async function HomePage() {
                           <span className="en-text">Explore</span>
                       </h5>
                       <ul>
-                          <li><a href="#about"><span className="ar-text">من نحن</span><span className="en-text">About Us</span></a></li>
-                          <li><a href="#services"><span className="ar-text">خدماتنا</span><span className="en-text">Services</span></a></li>
-                          <li><a href="#gallery"><span className="ar-text">أعمالنا</span><span className="en-text">Gallery</span></a></li>
+                          <li><a href="#about"><span className="ar-text">{navbar?.nav_about_ar}</span><span className="en-text">{navbar?.nav_about_en}</span></a></li>
+                          <li><a href="#services"><span className="ar-text">{navbar?.nav_services_ar}</span><span className="en-text">{navbar?.nav_services_en}</span></a></li>
+                          <li><a href="#gallery"><span className="ar-text">{navbar?.nav_gallery_ar}</span><span className="en-text">{navbar?.nav_gallery_en}</span></a></li>
                       </ul>
                   </div>
                   <div className="footer-links">
