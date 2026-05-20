@@ -51,7 +51,8 @@ const translations = {
         how_step3_t: "Choose Items",
         how_step3_d: "Select the perfect pieces from our premium catalog.",
         how_step4_t: "We Deliver",
-        how_step4_d: "Complete setup and collection at your venue."
+        how_step4_d: "Complete setup and collection at your venue.",
+        load_more: "Load More"
     },
     ar: {
         nav_home: "الرئيسية",
@@ -105,7 +106,8 @@ const translations = {
         how_step3_t: "اختر القطع",
         how_step3_d: "اختر القطع المثالية من كتالوجنا المميز.",
         how_step4_t: "نحن نسلم",
-        how_step4_d: "التجهيز الكامل والاستلام من موقعك."
+        how_step4_d: "التجهيز الكامل والاستلام من موقعك.",
+        load_more: "إظهار المزيد"
     }
 };
 
@@ -244,8 +246,54 @@ const initApp = () => {
         });
     }
 
+    // Gallery State
+    let currentGalleryFilter = 'all';
+    let currentGalleryLimit = 5;
+
+    function renderGallery() {
+        const cards = Array.from(document.querySelectorAll('.gallery-card'));
+        let visibleCount = 0;
+        let totalInFilter = 0;
+
+        cards.forEach(card => {
+            const filterMatch = currentGalleryFilter === 'all' || card.classList.contains(currentGalleryFilter);
+            if (filterMatch) {
+                totalInFilter++;
+                if (visibleCount < currentGalleryLimit) {
+                    card.style.display = 'inline-block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        const loadMoreBtnContainer = document.getElementById('galleryLoadMore');
+        if (loadMoreBtnContainer) {
+            if (currentGalleryLimit >= totalInFilter) {
+                loadMoreBtnContainer.style.display = 'none';
+            } else {
+                loadMoreBtnContainer.style.display = 'block';
+            }
+        }
+    }
+
+    // Call initially after page load
+    setTimeout(renderGallery, 100);
+
     // Event Delegation for bulletproof Next.js integration
     document.addEventListener('click', (e) => {
+        // Load More Button
+        const loadMoreBtn = e.target.closest('#loadMoreBtn');
+        if (loadMoreBtn) {
+            e.preventDefault();
+            currentGalleryLimit += 5;
+            renderGallery();
+            return;
+        }
+
         // Language Switcher
         const langBtn = e.target.closest('#langSwitch');
         if (langBtn) {
@@ -262,15 +310,11 @@ const initApp = () => {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             filterBtn.classList.add('active');
             
-            // Filter existing DOM elements
-            const filter = filterBtn.getAttribute('data-filter');
-            document.querySelectorAll('.gallery-card').forEach(card => {
-                if (filter === 'all' || card.classList.contains(filter)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
+            // Update existing state and re-render
+            currentGalleryFilter = filterBtn.getAttribute('data-filter') || 'all';
+            currentGalleryLimit = 5; // Reset limit when filter changes
+            renderGallery();
+            
             return;
         }
     });

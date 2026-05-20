@@ -176,23 +176,42 @@ export default async function HomePage() {
               </div>
 
               <div className="gallery-grid" id="galleryGrid">
-                  {gallery.map((item: any) => (
-                    <div key={item.id} className={`gallery-card ${item.categoryId}`}>
-                        <div className="gallery-image">
-                            <img src={item.image_url} alt={item.title_en} />
-                        </div>
-                        <div className="gallery-info">
-                            <h4>
-                                <span className="ar-text">{item.title_ar}</span>
-                                <span className="en-text">{item.title_en}</span>
-                            </h4>
-                            <p>
-                                <span className="ar-text">{item.desc_ar}</span>
-                                <span className="en-text">{item.desc_en}</span>
-                            </p>
-                        </div>
-                    </div>
-                  ))}
+                  {gallery.map((item: any) => {
+                    const hasTitle = Boolean(item.title_ar || item.title_en);
+                    const hasDesc = Boolean(item.desc_ar || item.desc_en);
+                    const isTitleOnly = hasTitle && !hasDesc;
+                    const isImageOnly = !hasTitle && !hasDesc;
+
+                    return (
+                      <div key={item.id} className={`gallery-card ${item.categoryId} ${isTitleOnly ? 'title-only' : ''} ${isImageOnly ? 'image-only' : ''}`}>
+                          <div className="gallery-image">
+                              <img src={item.image_url} alt={item.title_en || "Gallery Image"} />
+                          </div>
+                          {(hasTitle || hasDesc) && (
+                              <div className="gallery-info">
+                                  {hasTitle && (
+                                      <h4>
+                                          {item.title_ar && <span className="ar-text">{item.title_ar}</span>}
+                                          {item.title_en && <span className="en-text">{item.title_en}</span>}
+                                      </h4>
+                                  )}
+                                  {hasDesc && (
+                                      <p>
+                                          {item.desc_ar && <span className="ar-text">{item.desc_ar}</span>}
+                                          {item.desc_en && <span className="en-text">{item.desc_en}</span>}
+                                      </p>
+                                  )}
+                              </div>
+                          )}
+                      </div>
+                    );
+                  })}
+              </div>
+
+              <div className="gallery-load-more" id="galleryLoadMore" style={{ textAlign: 'center', marginTop: '40px', display: 'none' }}>
+                  <button className="btn btn-outline" id="loadMoreBtn" data-i18n="load_more">
+                      إظهار المزيد
+                  </button>
               </div>
           </div>
       </section>
