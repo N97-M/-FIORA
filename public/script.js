@@ -250,6 +250,37 @@ const initApp = () => {
     let currentGalleryFilter = 'all';
     let currentGalleryLimit = 5;
 
+    function resizeGridItem(item) {
+        const grid = document.getElementById("galleryGrid");
+        if (!grid) return;
+        
+        const rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
+        
+        let contentHeight = 0;
+        const imgWrapper = item.querySelector('.gallery-image');
+        if (imgWrapper) {
+            const img = imgWrapper.querySelector('img');
+            // If the image is loaded, use its height, else fallback to wrapper height
+            contentHeight += img && img.complete ? img.getBoundingClientRect().height : imgWrapper.getBoundingClientRect().height;
+        }
+        
+        const info = item.querySelector('.gallery-info');
+        if (info) contentHeight += info.getBoundingClientRect().height;
+        
+        // Account for grid-gap spacing inside the span
+        const rowSpan = Math.ceil((contentHeight + 20) / rowHeight);
+        item.style.gridRowEnd = "span " + rowSpan;
+    }
+
+    function resizeAllGridItems() {
+        const allItems = document.querySelectorAll(".gallery-card");
+        allItems.forEach(item => {
+            if (item.style.display !== 'none') {
+                resizeGridItem(item);
+            }
+        });
+    }
+
     function renderGallery() {
         const cards = Array.from(document.querySelectorAll('.gallery-card'));
         let visibleCount = 0;
@@ -260,7 +291,7 @@ const initApp = () => {
             if (filterMatch) {
                 totalInFilter++;
                 if (visibleCount < currentGalleryLimit) {
-                    card.style.display = 'inline-block';
+                    card.style.display = 'block'; // Block display for grid items
                     visibleCount++;
                 } else {
                     card.style.display = 'none';
@@ -278,10 +309,27 @@ const initApp = () => {
                 loadMoreBtnContainer.style.display = 'block';
             }
         }
+
+        // Trigger height recalculation immediately and after a short delay
+        resizeAllGridItems();
+        setTimeout(resizeAllGridItems, 100);
     }
 
-    // Call initially after page load
-    setTimeout(renderGallery, 100);
+    // Call initially and when images load
+    setTimeout(() => {
+        renderGallery();
+        
+        const allGalleryImages = document.querySelectorAll('.gallery-image img');
+        allGalleryImages.forEach(img => {
+            if (img.complete) {
+                resizeAllGridItems();
+            } else {
+                img.addEventListener('load', resizeAllGridItems);
+            }
+        });
+    }, 100);
+
+    window.addEventListener('resize', resizeAllGridItems);
 
     // Event Delegation for bulletproof Next.js integration
     document.addEventListener('click', (e) => {

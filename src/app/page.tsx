@@ -176,14 +176,18 @@ export default async function HomePage() {
               </div>
 
               <div className="gallery-grid" id="galleryGrid">
-                  {gallery.map((item: any) => {
+                  {gallery.map((item: any, index: number) => {
                     const hasTitle = Boolean(item.title_ar || item.title_en);
                     const hasDesc = Boolean(item.desc_ar || item.desc_en);
                     const isTitleOnly = hasTitle && !hasDesc;
                     const isImageOnly = !hasTitle && !hasDesc;
+                    
+                    // Create dynamic Pinterest-like masonry layout by making some cards larger
+                    // e.g. the first item and every 5th item
+                    const isLarge = index % 5 === 0;
 
                     return (
-                      <div key={item.id} className={`gallery-card ${item.categoryId} ${isTitleOnly ? 'title-only' : ''} ${isImageOnly ? 'image-only' : ''}`}>
+                      <div key={item.id} className={`gallery-card ${item.categoryId} ${isTitleOnly ? 'title-only' : ''} ${isImageOnly ? 'image-only' : ''} ${isLarge ? 'large' : ''}`}>
                           <div className="gallery-image">
                               <img src={item.image_url} alt={item.title_en || "Gallery Image"} />
                           </div>
