@@ -429,12 +429,13 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
 .services-circular-container {
     position: relative;
     width: 800px;
-    height: 800px;
+    height: 400px; /* horizontal ellipse */
     margin: 60px auto 0;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: visible;
+    border-radius: 50%; /* keep rounded shape */
 }
 
 .services-center-logo {
