@@ -428,8 +428,8 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
 /* Circular Services Layout (Desktop & Tablet) */
 .services-circular-container {
     position: relative;
-    width: 800px;
-    height: 400px; /* horizontal ellipse */
+    width: 1000px;
+    height: 500px; /* horizontal ellipse */
     margin: 120px auto 0;
     display: flex;
     justify-content: center;
@@ -450,6 +450,13 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
     justify-content: center;
     align-items: center;
     box-shadow: 0 0 35px rgba(219, 192, 126, 0.25), inset 0 0 20px rgba(219, 192, 126, 0.15);
+    overflow: hidden;
+}
+
+.services-center-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .logo-inner {
@@ -597,8 +604,8 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
 /* Responsive Styles */
 @media (max-width: 1024px) {
     .services-circular-container {
-        width: 620px;
-        height: 620px;
+        width: 760px;
+        height: 380px;
     }
     .service-card-circular {
         width: 190px;

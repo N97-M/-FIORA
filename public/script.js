@@ -387,93 +387,114 @@ const initApp = () => {
     if (orbitWrapper && circularCards.length > 0) {
         const total = circularCards.length;
         
-        function setupCircularLayout() {
+        let angleOffset = 0;
+        let isHovered = false;
+        let animationFrameId;
+        
+        function updateOrbitPositions() {
             const isTablet = window.innerWidth <= 1024 && window.innerWidth > 768;
             const isMobile = window.innerWidth <= 768;
             if (isMobile) return;
             
-            const radius = isTablet ? 210 : 290;
-            const centerCoord = 400; // SVG viewBox center (800x800)
+            const radiusX = isTablet ? 320 : 450;
+            const radiusY = isTablet ? 150 : 200;
+            const centerX = 500; // SVG viewBox center (1000x500)
+            const centerY = 250;
             const innerRadius = 100; // Logo border radius
-            const outerRadius = isTablet ? 210 : 290; // Card radius relative to SVG
-            
-            linesGroup.innerHTML = '';
             
             circularCards.forEach((card, index) => {
-                const angle = (index / total) * 2 * Math.PI - Math.PI / 2; // Start from top
-                const x = Math.cos(angle) * radius;
-                const y = Math.sin(angle) * radius;
+                const baseAngle = (index / total) * 2 * Math.PI - Math.PI / 2; // Start from top
+                const angle = baseAngle + angleOffset;
                 
                 // Position card container relative to center orbit wrapper
+                const x = Math.cos(angle) * radiusX;
+                const y = Math.sin(angle) * radiusY;
                 card.style.left = '50%';
                 card.style.top = '50%';
                 card.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
-                card.dataset.x = x;
-                card.dataset.y = y;
                 
-                // Draw connecting SVG line with arrow pointing to the card
-                const startX = centerCoord + Math.cos(angle) * innerRadius;
-                const startY = centerCoord + Math.sin(angle) * innerRadius;
-                // Offset ends 80px before card center
-                const endX = centerCoord + Math.cos(angle) * (outerRadius - 80);
-                const endY = centerCoord + Math.sin(angle) * (outerRadius - 80);
+                // Keep the card upright since we are not rotating the wrapper
+                const counter = card.querySelector('.service-card-counter');
+                if (counter) {
+                    counter.style.transform = `rotate(0deg)`;
+                }
                 
-                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line.setAttribute('x1', startX);
-                line.setAttribute('y1', startY);
-                line.setAttribute('x2', endX);
-                line.setAttribute('y2', endY);
+                // Calculate SVG line points
+                let line = document.getElementById(`connection-line-${index}`);
+                if (!line) {
+                    line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    line.id = `connection-line-${index}`;
+                    line.setAttribute('stroke', 'var(--primary-gold)');
+                    line.setAttribute('stroke-width', '1.5');
+                    line.setAttribute('fill', 'none');
+                    line.setAttribute('opacity', '0.35');
+                    line.style.transition = 'opacity 0.4s, stroke-width 0.4s, filter 0.4s';
+                    linesGroup.appendChild(line);
+                }
+
+                const startX = centerX + Math.cos(angle) * innerRadius;
+                const startY = centerY + Math.sin(angle) * innerRadius;
+                // Offset ends roughly 80px before card center
+                const endX = centerX + Math.cos(angle) * (radiusX - 80);
+                const endY = centerY + Math.sin(angle) * (radiusY - 80);
+                
+                // Elegant cubic bezier curve
+                const controlPointOffset = 60;
+                const cp1x = startX + Math.cos(angle) * controlPointOffset;
+                const cp1y = startY + Math.sin(angle) * controlPointOffset;
+                const cp2x = endX - Math.cos(angle) * controlPointOffset;
+                const cp2y = endY - Math.sin(angle) * controlPointOffset;
+
+                line.setAttribute('d', `M ${startX} ${startY} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`);
+                
+                // Add marker if not added (we use CSS for marker to allow transition, or inline)
                 line.setAttribute('marker-end', 'url(#arrow)');
-                line.id = `connection-line-${index}`;
-                linesGroup.appendChild(line);
             });
+        }
+
+        function setupCircularLayout() {
+            linesGroup.innerHTML = ''; // Reset on resize
+            updateOrbitPositions();
         }
         
         setupCircularLayout();
         window.addEventListener('resize', setupCircularLayout);
         
-        // Circular auto-rotation loop
-        let angleOffset = 0;
-        let isHovered = false;
-        
         function animateOrbit() {
             if (!isHovered) {
-                angleOffset += 0.05; // Degree increment per frame (slow & elegant)
-                if (angleOffset >= 360) angleOffset -= 360;
-                
-                orbitWrapper.style.transform = `rotate(${angleOffset}deg)`;
-                linesGroup.style.transform = `rotate(${angleOffset}deg)`;
-                linesGroup.style.transformOrigin = '400px 400px';
-                
-                // Counter-rotate the .service-card-counter wrapper to keep contents upright
-                circularCards.forEach(card => {
-                    const counter = card.querySelector('.service-card-counter');
-                    if (counter) {
-                        counter.style.transform = `rotate(${-angleOffset}deg)`;
-                    }
-                });
+                angleOffset += 0.0015; // Smooth, slow radian increment (floating feel)
+                if (angleOffset >= Math.PI * 2) angleOffset -= Math.PI * 2;
+                updateOrbitPositions();
             }
-            requestAnimationFrame(animateOrbit);
+            animationFrameId = requestAnimationFrame(animateOrbit);
         }
         
-        // Add hover listener on .service-card-inner (innermost child with CSS transition)
+        // Add hover listener on .service-card-inner
         circularCards.forEach((card, index) => {
             const cardInner = card.querySelector('.service-card-inner');
             if (cardInner) {
                 cardInner.addEventListener('mouseenter', () => {
                     isHovered = true;
                     const line = document.getElementById(`connection-line-${index}`);
-                    if (line) line.classList.add('active');
+                    if (line) {
+                        line.style.strokeWidth = '2.5';
+                        line.style.opacity = '0.9';
+                        line.style.filter = 'drop-shadow(0 0 8px rgba(219, 192, 126, 0.8))';
+                    }
                 });
                 cardInner.addEventListener('mouseleave', () => {
                     isHovered = false;
                     const line = document.getElementById(`connection-line-${index}`);
-                    if (line) line.classList.remove('active');
+                    if (line) {
+                        line.style.strokeWidth = '1.5';
+                        line.style.opacity = '0.35';
+                        line.style.filter = 'none';
+                    }
                 });
             }
         });
         
-        requestAnimationFrame(animateOrbit);
+        animateOrbit();
     }
 
     // Mobile Vertical 3D Stack Carousel

@@ -16,26 +16,20 @@ export default function SettingsForm({ initialSettings }: { initialSettings: any
     const form = e.currentTarget
     const formData = new FormData(form)
 
-    const payload = {
-      whatsapp_number: formData.get('whatsapp_number') as string,
-      status: formData.get('status') as string,
-      whatsapp_msg_ar: formData.get('whatsapp_msg_ar') as string,
-      whatsapp_msg_en: formData.get('whatsapp_msg_en') as string,
-      tiktok_url: formData.get('tiktok_url') as string,
-      instagram_url: formData.get('instagram_url') as string,
-      snapchat_url: formData.get('snapchat_url') as string,
-    }
-
     try {
       const res = await fetch('/api/settings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: formData
       })
 
-      const data = await res.json()
-
-      if (!res.ok) {
+      let data: any = {}
+      if (res.ok) {
+        data = await res.json()
+      } else {
+        if (res.status === 413) {
+          throw new Error('Image too large.')
+        }
+        try { data = await res.json() } catch { throw new Error(await res.text() || 'Error') }
         throw new Error(data.error || 'Failed to save connections')
       }
 
@@ -67,7 +61,7 @@ export default function SettingsForm({ initialSettings }: { initialSettings: any
         </div>
       )}
 
-      <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '25px' }}>
+      <form onSubmit={handleSubmit} encType="multipart/form-data" style={{ display: 'grid', gap: '25px' }}>
         
         <div className="admin-grid-2">
             <div style={{ display: 'grid', gap: '10px' }}>
@@ -111,6 +105,13 @@ export default function SettingsForm({ initialSettings }: { initialSettings: any
                 <label style={{ color: '#aaa', fontSize: '14px' }}>Snapchat Link</label>
                 <input name="snapchat_url" defaultValue={initialSettings?.snapchat_url} style={{ padding: '12px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '8px', width: '100%', boxSizing: 'border-box' }} />
             </div>
+        </div>
+
+        {/* Services Center Image Upload */}
+        <div style={{ display: 'grid', gap: '10px', background: 'rgba(0,0,0,0.3)', padding: '20px', borderRadius: '10px', border: '1px solid #222' }}>
+            <label style={{ color: '#DBC07E', fontSize: '14px' }}>Services Center Orbit Image</label>
+            <input type="file" name="services_center_image" accept="image/*" style={{ padding: '10px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '8px' }} />
+            <small style={{ color: '#888', fontSize: '11px' }}>Leave empty to keep current image: {initialSettings?.services_center_image || 'None'}</small>
         </div>
 
         <button 

@@ -168,15 +168,19 @@ export default async function HomePage() {
               <div className="services-circular-container">
                   {/* Central Fixed Logo */}
                   <div className="services-center-logo">
-                      <div className="logo-inner">
-                          <span className="logo-text-en">FIORA</span>
-                          <span className="logo-text-ar">فيورا</span>
-                          <div className="logo-decor"></div>
-                      </div>
+                      {settings?.services_center_image ? (
+                          <img src={settings.services_center_image} alt="Center Logo" className="services-center-img" />
+                      ) : (
+                          <div className="logo-inner">
+                              <span className="logo-text-en">FIORA</span>
+                              <span className="logo-text-ar">فيورا</span>
+                              <div className="logo-decor"></div>
+                          </div>
+                      )}
                   </div>
 
                   {/* SVG Connecting Lines Overlay */}
-                  <svg className="services-connections" id="servicesConnections" viewBox="0 0 800 800">
+                  <svg className="services-connections" id="servicesConnections" viewBox="0 0 1000 500">
                       <defs>
                           <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
                               <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#DBC07E" />
@@ -186,8 +190,8 @@ export default async function HomePage() {
                               <stop offset="100%" stopColor="#DBC07E" stopOpacity="0" />
                           </radialGradient>
                        </defs>
-                       <circle cx="400" cy="400" r="100" stroke="#DBC07E" strokeWidth="1" strokeDasharray="5,5" fill="none" opacity="0.2" />
-                       <circle cx="400" cy="400" r="80" fill="url(#glowGrad)" />
+                       <ellipse cx="500" cy="250" rx="150" ry="150" stroke="#DBC07E" strokeWidth="1" strokeDasharray="5,5" fill="none" opacity="0.2" />
+                       <circle cx="500" cy="250" r="100" fill="url(#glowGrad)" />
                        <g id="dynamicLinesGroup"></g>
                   </svg>
 
