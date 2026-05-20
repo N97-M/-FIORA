@@ -10,8 +10,31 @@ export default async function HomePage() {
   const settings = await prisma.settings.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } })
   
   const services = await prisma.service.findMany({ where: { isVisible: true }, orderBy: { order: 'asc' } })
-  const gallery = await prisma.galleryItem.findMany({ include: { category: true }, where: { isVisible: true }, orderBy: { order: 'asc' } })
+  const galleryRaw = await prisma.galleryItem.findMany({ include: { category: true }, where: { isVisible: true }, orderBy: { order: 'asc' } })
   const categories = await prisma.category.findMany({ orderBy: { order: 'asc' } })
+
+  // Group by category and interleave (round-robin style) to mix categories in "All" view
+  const groups: { [key: string]: any[] } = {}
+  galleryRaw.forEach(item => {
+    const catId = item.categoryId || 'other'
+    if (!groups[catId]) groups[catId] = []
+    groups[catId].push(item)
+  })
+
+  const gallery: any[] = []
+  const groupKeys = Object.keys(groups)
+  let maxLen = 0
+  groupKeys.forEach(k => {
+    if (groups[k].length > maxLen) maxLen = groups[k].length
+  })
+
+  for (let i = 0; i < maxLen; i++) {
+    groupKeys.forEach(k => {
+      if (groups[k][i]) {
+        gallery.push(groups[k][i])
+      }
+    })
+  }
   
   // Safely get or create Navbar settings
   const navbar = await prisma.navbar.upsert({
