@@ -196,7 +196,7 @@ export default function GalleryClient({ gallery, categories: initialCategories }
               <h4 style={{ color: '#DBC07E', fontSize: '16px', margin: 0 }}>Arabic Content</h4>
               <div style={{ display: 'grid', gap: '5px' }}>
                 <label style={{ fontSize: '12px', color: '#aaa' }}>Title (AR)</label>
-                <input name="title_ar" required style={inputStyle} />
+                <input name="title_ar" style={inputStyle} />
               </div>
               <div style={{ display: 'grid', gap: '5px' }}>
                 <label style={{ fontSize: '12px', color: '#aaa' }}>Description (AR)</label>
@@ -208,7 +208,7 @@ export default function GalleryClient({ gallery, categories: initialCategories }
               <h4 style={{ color: '#DBC07E', fontSize: '16px', margin: 0 }}>English Content</h4>
               <div style={{ display: 'grid', gap: '5px' }}>
                 <label style={{ fontSize: '12px', color: '#aaa' }}>Title (EN)</label>
-                <input name="title_en" required style={inputStyle} />
+                <input name="title_en" style={inputStyle} />
               </div>
               <div style={{ display: 'grid', gap: '5px' }}>
                 <label style={{ fontSize: '12px', color: '#aaa' }}>Description (EN)</label>

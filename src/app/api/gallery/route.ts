@@ -7,12 +7,19 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { title_ar, title_en, desc_ar, desc_en, categoryId, image_url } = body
 
-    if (!title_ar || !title_en || !categoryId || !image_url) {
+    if (!categoryId || !image_url) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
     const item = await prisma.galleryItem.create({
-      data: { title_ar, title_en, desc_ar: desc_ar || '', desc_en: desc_en || '', categoryId, image_url }
+      data: { 
+        title_ar: title_ar || '', 
+        title_en: title_en || '', 
+        desc_ar: desc_ar || '', 
+        desc_en: desc_en || '', 
+        categoryId, 
+        image_url 
+      }
     })
 
     revalidatePath('/')
