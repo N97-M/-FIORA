@@ -163,21 +163,80 @@ export default async function HomePage() {
               <div className="section-title" data-bg-text="SERVICES">
                   <h2 data-i18n="services_title">خدماتنا | Our Services</h2>
               </div>
-              <div className="services-grid" id="servicesGrid">
-                  {services.map((service: any) => (
-                    <div key={service.id} className="service-card">
-                        <i className={service.icon}></i>
-                        <h3>
-                            <span className="ar-text">{service.title_ar}</span>
-                            <span className="en-text">{service.title_en}</span>
-                        </h3>
-                        <p>
-                            <span className="ar-text">{service.desc_ar}</span>
-                            <span className="en-text">{service.desc_en}</span>
-                        </p>
-                    </div>
-                  ))}
+              
+              {/* Circular Services Layout (Desktop/Tablet) */}
+              <div className="services-circular-container">
+                  {/* Central Fixed Logo */}
+                  <div className="services-center-logo">
+                      <div className="logo-inner">
+                          <span className="logo-text-en">FIORA</span>
+                          <span className="logo-text-ar">فيورا</span>
+                          <div className="logo-decor"></div>
+                      </div>
+                  </div>
+
+                  {/* SVG Connecting Lines Overlay */}
+                  <svg className="services-connections" id="servicesConnections" viewBox="0 0 800 800">
+                      <defs>
+                          <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                              <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#DBC07E" />
+                          </marker>
+                          <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+                              <stop offset="0%" stopColor="#DBC07E" stopOpacity="0.25" />
+                              <stop offset="100%" stopColor="#DBC07E" stopOpacity="0" />
+                          </radialGradient>
+                       </defs>
+                       <circle cx="400" cy="400" r="100" stroke="#DBC07E" strokeWidth="1" strokeDasharray="5,5" fill="none" opacity="0.2" />
+                       <circle cx="400" cy="400" r="80" fill="url(#glowGrad)" />
+                       <g id="dynamicLinesGroup"></g>
+                  </svg>
+
+                  {/* Rotating Orbit Wrapper for Cards */}
+                  <div className="services-orbit-wrapper" id="servicesOrbitWrapper">
+                      {services.map((service: any, index: number) => (
+                        <div key={service.id} className="service-card-circular" data-index={index}>
+                            <div className="service-card-counter">
+                                <div className="service-card-inner">
+                                    <i className={service.icon}></i>
+                                    <h3>
+                                        <span className="ar-text">{service.title_ar}</span>
+                                        <span className="en-text">{service.title_en}</span>
+                                    </h3>
+                                    <p>
+                                        <span className="ar-text">{service.desc_ar}</span>
+                                        <span className="en-text">{service.desc_en}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                      ))}
+                  </div>
               </div>
+
+              {/* Mobile Vertical Carousel */}
+              <div className="services-mobile-carousel" id="servicesMobileCarousel">
+                  <div className="mobile-carousel-track" id="mobileCarouselTrack">
+                      {services.map((service: any, index: number) => (
+                        <div key={service.id} className="service-card-mobile" data-index={index}>
+                            <i className={service.icon}></i>
+                            <h3>
+                                <span className="ar-text">{service.title_ar}</span>
+                                <span className="en-text">{service.title_en}</span>
+                            </h3>
+                            <p>
+                                <span className="ar-text">{service.desc_ar}</span>
+                                <span className="en-text">{service.desc_en}</span>
+                            </p>
+                        </div>
+                      ))}
+                  </div>
+                  <div className="mobile-carousel-indicators" id="mobileCarouselIndicators">
+                      {services.map((_: any, index: number) => (
+                          <span key={index} className={`indicator ${index === 0 ? 'active' : ''}`} data-index={index}></span>
+                      ))}
+                  </div>
+              </div>
+
           </div>
       </section>
 

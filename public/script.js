@@ -136,8 +136,8 @@ const initApp = () => {
     // Elements
     const preloader = document.getElementById('preloader');
     const langSwitch = document.getElementById('langSwitch');
-    const galleryGrid = document.getElementById('galleryGrid');
-    const servicesGrid = document.getElementById('servicesGrid');
+    const servicesCircular = document.querySelector('.services-circular-container');
+    const servicesMobile = document.getElementById('servicesMobileCarousel');
     const timelineGrid = document.getElementById('timelineGrid');
     const header = document.querySelector('header');
     const backToTopBtn = document.getElementById('backToTop');
@@ -374,6 +374,212 @@ const initApp = () => {
     };
 
     if(backToTopBtn) backToTopBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // -------------------------------------------------------------
+    // REDESIGNED SERVICES SECTION INTERACTIVITY
+    // -------------------------------------------------------------
+    const orbitWrapper = document.getElementById('servicesOrbitWrapper');
+    const svgConnections = document.getElementById('servicesConnections');
+    const linesGroup = document.getElementById('dynamicLinesGroup');
+    const circularCards = document.querySelectorAll('.service-card-circular');
+    
+    // Desktop/Tablet Circular Layout
+    if (orbitWrapper && circularCards.length > 0) {
+        const total = circularCards.length;
+        
+        function setupCircularLayout() {
+            const isTablet = window.innerWidth <= 1024 && window.innerWidth > 768;
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) return;
+            
+            const radius = isTablet ? 210 : 290;
+            const centerCoord = 400; // SVG viewBox center (800x800)
+            const innerRadius = 100; // Logo border radius
+            const outerRadius = isTablet ? 210 : 290; // Card radius relative to SVG
+            
+            linesGroup.innerHTML = '';
+            
+            circularCards.forEach((card, index) => {
+                const angle = (index / total) * 2 * Math.PI - Math.PI / 2; // Start from top
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+                
+                // Position card container relative to center orbit wrapper
+                card.style.left = '50%';
+                card.style.top = '50%';
+                card.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+                card.dataset.x = x;
+                card.dataset.y = y;
+                
+                // Draw connecting SVG line with arrow pointing to the card
+                const startX = centerCoord + Math.cos(angle) * innerRadius;
+                const startY = centerCoord + Math.sin(angle) * innerRadius;
+                // Offset ends 80px before card center
+                const endX = centerCoord + Math.cos(angle) * (outerRadius - 80);
+                const endY = centerCoord + Math.sin(angle) * (outerRadius - 80);
+                
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', startX);
+                line.setAttribute('y1', startY);
+                line.setAttribute('x2', endX);
+                line.setAttribute('y2', endY);
+                line.setAttribute('marker-end', 'url(#arrow)');
+                line.id = `connection-line-${index}`;
+                linesGroup.appendChild(line);
+            });
+        }
+        
+        setupCircularLayout();
+        window.addEventListener('resize', setupCircularLayout);
+        
+        // Circular auto-rotation loop
+        let angleOffset = 0;
+        let isHovered = false;
+        
+        function animateOrbit() {
+            if (!isHovered) {
+                angleOffset += 0.05; // Degree increment per frame (slow & elegant)
+                if (angleOffset >= 360) angleOffset -= 360;
+                
+                orbitWrapper.style.transform = `rotate(${angleOffset}deg)`;
+                linesGroup.style.transform = `rotate(${angleOffset}deg)`;
+                linesGroup.style.transformOrigin = '400px 400px';
+                
+                // Counter-rotate the .service-card-counter wrapper to keep contents upright
+                circularCards.forEach(card => {
+                    const counter = card.querySelector('.service-card-counter');
+                    if (counter) {
+                        counter.style.transform = `rotate(${-angleOffset}deg)`;
+                    }
+                });
+            }
+            requestAnimationFrame(animateOrbit);
+        }
+        
+        // Add hover listener on .service-card-inner (innermost child with CSS transition)
+        circularCards.forEach((card, index) => {
+            const cardInner = card.querySelector('.service-card-inner');
+            if (cardInner) {
+                cardInner.addEventListener('mouseenter', () => {
+                    isHovered = true;
+                    const line = document.getElementById(`connection-line-${index}`);
+                    if (line) line.classList.add('active');
+                });
+                cardInner.addEventListener('mouseleave', () => {
+                    isHovered = false;
+                    const line = document.getElementById(`connection-line-${index}`);
+                    if (line) line.classList.remove('active');
+                });
+            }
+        });
+        
+        requestAnimationFrame(animateOrbit);
+    }
+
+    // Mobile Vertical 3D Stack Carousel
+    const mobileCarousel = document.getElementById('servicesMobileCarousel');
+    const mobileCards = document.querySelectorAll('.service-card-mobile');
+    const indicators = document.querySelectorAll('#mobileCarouselIndicators .indicator');
+    
+    if (mobileCarousel && mobileCards.length > 0) {
+        let activeIndex = 0;
+        const totalMobile = mobileCards.length;
+        let mobileTimer = null;
+        
+        function updateMobileCarousel() {
+            mobileCards.forEach((card, index) => {
+                card.className = 'service-card-mobile'; // Reset classes
+                
+                if (index === activeIndex) {
+                    card.classList.add('active');
+                } else if (index === (activeIndex - 1 + totalMobile) % totalMobile) {
+                    card.classList.add('prev');
+                } else if (index === (activeIndex + 1) % totalMobile) {
+                    card.classList.add('next');
+                }
+            });
+            
+            // Update indicators
+            indicators.forEach((indicator, index) => {
+                if (index === activeIndex) {
+                    indicator.classList.add('active');
+                } else {
+                    indicator.classList.remove('active');
+                }
+            });
+        }
+        
+        function nextMobileCard() {
+            activeIndex = (activeIndex + 1) % totalMobile;
+            updateMobileCarousel();
+        }
+        
+        function prevMobileCard() {
+            activeIndex = (activeIndex - 1 + totalMobile) % totalMobile;
+            updateMobileCarousel();
+        }
+        
+        function startMobileAutoplay() {
+            stopMobileAutoplay();
+            mobileTimer = setInterval(nextMobileCard, 4500); // 4.5 seconds interval
+        }
+        
+        function stopMobileAutoplay() {
+            if (mobileTimer) {
+                clearInterval(mobileTimer);
+                mobileTimer = null;
+            }
+        }
+        
+        // Interaction: Tap prev/next cards to navigate directly
+        mobileCards.forEach((card, index) => {
+            card.addEventListener('click', () => {
+                if (card.classList.contains('prev')) {
+                    prevMobileCard();
+                    startMobileAutoplay();
+                } else if (card.classList.contains('next')) {
+                    nextMobileCard();
+                    startMobileAutoplay();
+                }
+            });
+        });
+        
+        // Interaction: Tap indicators
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                activeIndex = index;
+                updateMobileCarousel();
+                startMobileAutoplay();
+            });
+        });
+        
+        // Interaction: Swipe support
+        let startY = 0;
+        let endY = 0;
+        
+        mobileCarousel.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+            stopMobileAutoplay();
+        }, { passive: true });
+        
+        mobileCarousel.addEventListener('touchend', (e) => {
+            endY = e.changedTouches[0].clientY;
+            const diffY = startY - endY;
+            
+            if (Math.abs(diffY) > 50) { // Threshold of 50px
+                if (diffY > 0) {
+                    nextMobileCard(); // Swiped up -> next
+                } else {
+                    prevMobileCard(); // Swiped down -> prev
+                }
+            }
+            startMobileAutoplay();
+        }, { passive: true });
+        
+        // Initial setup
+        updateMobileCarousel();
+        startMobileAutoplay();
+    }
 
     // Initialize
     updateLanguage('ar');
