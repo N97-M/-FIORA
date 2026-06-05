@@ -41,10 +41,12 @@ model Hero {
   feat_3_ar      String   @default("توصيل")
 
   // Background Media
-  bg_type        String   @default("IMAGE") // IMAGE or VIDEO
-  image_url      String   @default("/hero-bg.jpg")
-  overlay_opacity Float   @default(0.5)
-  updatedAt      DateTime @updatedAt
+  bg_type          String   @default("IMAGE") // Desktop: IMAGE or VIDEO
+  image_url        String   @default("/hero-bg.jpg")
+  mobile_bg_type   String   @default("IMAGE") // Mobile: IMAGE or VIDEO
+  mobile_image_url String   @default("")
+  overlay_opacity  Float   @default(0.5)
+  updatedAt        DateTime @updatedAt
 }
 
 // 3. Navbar Settings

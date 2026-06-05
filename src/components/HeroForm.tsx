@@ -13,7 +13,8 @@ export default function HeroForm({ initialHero }: { initialHero: any }) {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
-  const [mediaFile, setMediaFile] = useState<File | null>(null)
+  const [desktopMediaFile, setDesktopMediaFile] = useState<File | null>(null)
+  const [mobileMediaFile, setMobileMediaFile] = useState<File | null>(null)
 
   const [formData, setFormData] = useState({
     title_ar: initialHero?.title_ar || '',
@@ -31,6 +32,7 @@ export default function HeroForm({ initialHero }: { initialHero: any }) {
     feat_3_ar: initialHero?.feat_3_ar || '',
     feat_3_en: initialHero?.feat_3_en || '',
     bg_type: initialHero?.bg_type || 'IMAGE',
+    mobile_bg_type: initialHero?.mobile_bg_type || 'IMAGE',
     overlay: initialHero?.overlay_opacity?.toString() || '0.5',
   })
 
@@ -46,34 +48,45 @@ export default function HeroForm({ initialHero }: { initialHero: any }) {
     setError('')
 
     try {
-      // Step 1: If a new file was selected, upload it first via /api/upload
+      // Step 1: Upload Desktop Media
       let imageUrl = initialHero?.image_url || '/hero-bg.jpg'
+      const MAX_FILE_SIZE = 4.5 * 1024 * 1024 // 4.5 MB
 
-      if (mediaFile && mediaFile.size > 0) {
-        // Client-side file size validation (Vercel limit is 4.5MB for serverless functions)
-        const MAX_FILE_SIZE = 4.5 * 1024 * 1024 // 4.5 MB
-        if (mediaFile.size > MAX_FILE_SIZE) {
-          throw new Error('The selected media file is too large. The maximum allowed size is 4.5MB. Please compress your file or use a smaller version.')
+      if (desktopMediaFile && desktopMediaFile.size > 0) {
+        if (desktopMediaFile.size > MAX_FILE_SIZE) {
+          throw new Error('Desktop media file is too large. Max allowed size is 4.5MB.')
         }
-
         const uploadForm = new FormData()
-        uploadForm.append('file', mediaFile)
+        uploadForm.append('file', desktopMediaFile)
 
-        const uploadRes = await fetch('/api/upload', {
-          method: 'POST',
-          body: uploadForm
-        })
-
+        const uploadRes = await fetch('/api/upload', { method: 'POST', body: uploadForm })
         if (!uploadRes.ok) {
-          if (uploadRes.status === 413) {
-            throw new Error('The selected background media file is too large. Please compress the file or use a smaller version.')
-          }
+          if (uploadRes.status === 413) throw new Error('Desktop media file is too large.')
           const uploadErr = await uploadRes.json().catch(() => ({}))
-          throw new Error(uploadErr.error || 'Failed to upload media file')
+          throw new Error(uploadErr.error || 'Failed to upload desktop media')
         }
-
         const uploadData = await uploadRes.json()
         imageUrl = uploadData.url
+      }
+
+      // Step 1.5: Upload Mobile Media
+      let mobileImageUrl = initialHero?.mobile_image_url || ''
+
+      if (mobileMediaFile && mobileMediaFile.size > 0) {
+        if (mobileMediaFile.size > MAX_FILE_SIZE) {
+          throw new Error('Mobile media file is too large. Max allowed size is 4.5MB.')
+        }
+        const uploadForm = new FormData()
+        uploadForm.append('file', mobileMediaFile)
+
+        const uploadRes = await fetch('/api/upload', { method: 'POST', body: uploadForm })
+        if (!uploadRes.ok) {
+          if (uploadRes.status === 413) throw new Error('Mobile media file is too large.')
+          const uploadErr = await uploadRes.json().catch(() => ({}))
+          throw new Error(uploadErr.error || 'Failed to upload mobile media')
+        }
+        const uploadData = await uploadRes.json()
+        mobileImageUrl = uploadData.url
       }
 
       // Step 2: Send all hero data as JSON
@@ -83,6 +96,7 @@ export default function HeroForm({ initialHero }: { initialHero: any }) {
         body: JSON.stringify({
           ...formData,
           image_url: imageUrl,
+          mobile_image_url: mobileImageUrl,
         })
       })
 
@@ -123,27 +137,46 @@ export default function HeroForm({ initialHero }: { initialHero: any }) {
         {/* Background Settings */}
         <div style={{ background: 'rgba(0,0,0,0.3)', padding: '20px', borderRadius: '10px', border: '1px solid #222' }}>
           <h4 style={{ marginBottom: '15px', color: '#DBC07E' }}>Background Settings</h4>
-          <div className="admin-grid-3">
-            <div style={{ display: 'grid', gap: '8px' }}>
+          
+          <div className="admin-grid-2" style={{ marginBottom: '20px' }}>
+            {/* Desktop Media */}
+            <div style={{ display: 'grid', gap: '8px', padding: '15px', border: '1px solid #333', borderRadius: '8px' }}>
+              <h5 style={{ margin: 0, color: '#fff' }}>Desktop (Laptop/PC View)</h5>
               <label style={{ color: '#aaa', fontSize: '13px' }}>Background Type</label>
               <select name="bg_type" value={formData.bg_type} onChange={handleChange} style={{ padding: '10px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '6px' }}>
                 <option value="IMAGE">Image</option>
                 <option value="VIDEO">Video</option>
               </select>
-            </div>
-            
-            <div style={{ display: 'grid', gap: '8px' }}>
-              <label style={{ color: '#aaa', fontSize: '13px' }}>Upload Media (Image or Video)</label>
+              <label style={{ color: '#aaa', fontSize: '13px', marginTop: '10px' }}>Upload Media</label>
               <input
                 type="file"
                 accept="image/*,video/mp4,video/webm"
-                onChange={(e) => setMediaFile(e.target.files?.[0] || null)}
+                onChange={(e) => setDesktopMediaFile(e.target.files?.[0] || null)}
                 style={{ padding: '7px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '6px' }}
               />
-              <small style={{ color: '#888', fontSize: '11px', wordBreak: 'break-all' }}>Leave empty to keep current background: {initialHero?.image_url}</small>
-              <small style={{ color: '#888', fontSize: '11px' }}>Max file size: 4.5MB</small>
+              <small style={{ color: '#888', fontSize: '11px', wordBreak: 'break-all' }}>Current: {initialHero?.image_url}</small>
             </div>
 
+            {/* Mobile Media */}
+            <div style={{ display: 'grid', gap: '8px', padding: '15px', border: '1px solid #333', borderRadius: '8px' }}>
+              <h5 style={{ margin: 0, color: '#fff' }}>Mobile (Phone View)</h5>
+              <label style={{ color: '#aaa', fontSize: '13px' }}>Background Type</label>
+              <select name="mobile_bg_type" value={formData.mobile_bg_type} onChange={handleChange} style={{ padding: '10px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '6px' }}>
+                <option value="IMAGE">Image</option>
+                <option value="VIDEO">Video</option>
+              </select>
+              <label style={{ color: '#aaa', fontSize: '13px', marginTop: '10px' }}>Upload Media</label>
+              <input
+                type="file"
+                accept="image/*,video/mp4,video/webm"
+                onChange={(e) => setMobileMediaFile(e.target.files?.[0] || null)}
+                style={{ padding: '7px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '6px' }}
+              />
+              <small style={{ color: '#888', fontSize: '11px', wordBreak: 'break-all' }}>Current: {initialHero?.mobile_image_url || 'None'}</small>
+            </div>
+          </div>
+
+          <div style={{ maxWidth: '300px' }}>
             <InputField label="Dark Overlay (0.0 - 1.0)" name="overlay" value={formData.overlay} onChange={handleChange} />
           </div>
         </div>

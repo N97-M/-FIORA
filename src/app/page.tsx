@@ -155,42 +155,33 @@ export default async function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <section id="home" className="hero" style={{ position: 'relative', overflow: 'hidden', backgroundImage: hero?.bg_type === 'IMAGE' ? `linear-gradient(rgba(253, 251, 247, ${hero?.overlay_opacity || 0.3}), rgba(253, 251, 247, ${hero?.overlay_opacity || 0.3})), url(${hero?.image_url || '/hero-bg.jpg'})` : 'none' }}>
+      <section id="home" className="hero" style={{ position: 'relative', overflow: 'hidden' }}>
           
-          {hero?.bg_type === 'VIDEO' && hero?.image_url && (
-            <>
-              <video 
-                autoPlay 
-                loop 
-                muted 
-                playsInline 
-                style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  transform: 'translate(-50%, -50%)',
-                  zIndex: 0
-                }}
-              >
+          {/* Desktop Media */}
+          <div className="hero-desktop-media" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
+            {hero?.bg_type === 'IMAGE' ? (
+              <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundImage: `url(${hero?.image_url || '/hero-bg.jpg'})`, backgroundSize: 'cover', backgroundPosition: 'center', zIndex: 0 }} />
+            ) : hero?.bg_type === 'VIDEO' && hero?.image_url ? (
+              <video autoPlay loop muted playsInline style={{ position: 'absolute', top: '50%', left: '50%', width: '100%', height: '100%', objectFit: 'cover', transform: 'translate(-50%, -50%)', zIndex: 0 }}>
                 <source src={hero.image_url} type="video/mp4" />
                 <source src={hero.image_url} type="video/webm" />
               </video>
-              <div 
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  backgroundColor: `rgba(253, 251, 247, ${hero?.overlay_opacity || 0.3})`,
-                  zIndex: 1
-                }}
-              />
-            </>
-          )}
+            ) : null}
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: `rgba(253, 251, 247, ${hero?.overlay_opacity || 0.3})`, zIndex: 1 }} />
+          </div>
+
+          {/* Mobile Media */}
+          <div className="hero-mobile-media" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
+            {hero?.mobile_bg_type === 'IMAGE' ? (
+              <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundImage: `url(${hero?.mobile_image_url || hero?.image_url || '/hero-bg.jpg'})`, backgroundSize: 'cover', backgroundPosition: 'center', zIndex: 0 }} />
+            ) : hero?.mobile_bg_type === 'VIDEO' && hero?.mobile_image_url ? (
+              <video autoPlay loop muted playsInline style={{ position: 'absolute', top: '50%', left: '50%', width: '100%', height: '100%', objectFit: 'cover', transform: 'translate(-50%, -50%)', zIndex: 0 }}>
+                <source src={hero.mobile_image_url} type="video/mp4" />
+                <source src={hero.mobile_image_url} type="video/webm" />
+              </video>
+            ) : null}
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: `rgba(253, 251, 247, ${hero?.overlay_opacity || 0.3})`, zIndex: 1 }} />
+          </div>
 
           <div className="container hero-content" style={{ position: 'relative', zIndex: 2 }}>
               <h1 style={{ color: 'var(--dark-black)' }}>

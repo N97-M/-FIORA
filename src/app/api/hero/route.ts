@@ -7,6 +7,7 @@ export async function POST(request: NextRequest) {
 
     const hero = await prisma.hero.findFirst()
     const finalImageUrl = body.image_url || hero?.image_url || '/hero-bg.jpg'
+    const finalMobileImageUrl = body.mobile_image_url || hero?.mobile_image_url || ''
 
     const data = {
       title_ar: body.title_ar || '',
@@ -25,6 +26,8 @@ export async function POST(request: NextRequest) {
       feat_3_en: body.feat_3_en || '',
       bg_type: body.bg_type || 'IMAGE',
       image_url: finalImageUrl,
+      mobile_bg_type: body.mobile_bg_type || 'IMAGE',
+      mobile_image_url: finalMobileImageUrl,
       overlay_opacity: parseFloat(body.overlay) || 0.5
     }
 
