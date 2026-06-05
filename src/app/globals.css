@@ -1,14 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Cormorant+Garamond:wght@600;700&family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap');
 
 :root {
-    /* Luxury Palette */
-    --primary-gold: #DBC07E;
-    --dark-black: #0A0A0A;
-    --cream-bg: #0F0F0F;
+    /* Luxury Light Palette */
+    --primary-gold: #D4AF37;
+    --dark-black: #1A1A1A;
+    --cream-bg: #FDFBF7;
+    --beige: #F5F5DC;
     --accent-gold: #C5A028;
     --white: #FFFFFF;
-    --text-main: #E0E0E0;
-    --text-muted: #A0A0A0;
+    --text-main: #333333;
+    --text-muted: #666666;
     
     --section-pad: clamp(80px, 10vw, 140px);
     --transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
@@ -18,7 +19,7 @@
     --font-logo: 'Playfair Display', serif;
     --font-h1: 'Cormorant Garamond', serif;
     --font-h2: 'Playfair Display', serif;
-    --font-body: 'Lato', sans-serif;
+    --font-body: 'Poppins', sans-serif;
     --font-arabic: 'Almarai', sans-serif;
 }
 
@@ -147,9 +148,10 @@ header {
 
 header.scrolled {
     padding: 15px 0;
-    background-color: rgba(10, 10, 10, 0.85);
+    background-color: rgba(253, 251, 247, 0.95);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(219, 192, 126, 0.1);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    box-shadow: var(--shadow-soft);
 }
 
 nav { display: flex; justify-content: space-between; align-items: center; width: 100%; }
@@ -181,9 +183,17 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
     text-transform: uppercase;
     font-weight: 500;
     letter-spacing: 2px;
-    opacity: 0.8;
+    opacity: 0.9;
     transition: var(--transition);
     position: relative;
+}
+
+header.scrolled .nav-links a {
+    color: var(--dark-black);
+}
+
+header.scrolled .logo {
+    filter: invert(1);
 }
 
 .nav-links a::after {

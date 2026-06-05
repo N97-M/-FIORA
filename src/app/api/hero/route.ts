@@ -3,55 +3,29 @@ import { prisma } from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
   try {
-    const formData = await request.formData()
+    const body = await request.json()
+
     const hero = await prisma.hero.findFirst()
-
-    // Handle File Upload
-    const file = formData.get('media_file') as File | null
-    let finalImageUrl = hero?.image_url || '/hero-bg.jpg'
-
-    if (file && file.size > 0) {
-      const buffer = Buffer.from(await file.arrayBuffer())
-      const filename = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
-      
-      const { supabaseAdmin } = await import('@/lib/supabase')
-      const { error } = await supabaseAdmin.storage
-        .from('uploads')
-        .upload(`public/${filename}`, buffer, {
-          contentType: file.type,
-          upsert: false
-        })
-
-      if (error) {
-        console.error('Supabase upload error:', error)
-        return NextResponse.json({ error: 'Failed to upload hero media: ' + error.message }, { status: 500 })
-      }
-
-      const { data: publicUrlData } = supabaseAdmin.storage
-        .from('uploads')
-        .getPublicUrl(`public/${filename}`)
-
-      finalImageUrl = publicUrlData.publicUrl
-    }
+    const finalImageUrl = body.image_url || hero?.image_url || '/hero-bg.jpg'
 
     const data = {
-      title_ar: formData.get('title_ar') as string || '',
-      title_en: formData.get('title_en') as string || '',
-      tagline_ar: formData.get('tagline_ar') as string || '',
-      tagline_en: formData.get('tagline_en') as string || '',
-      btn_gallery_ar: formData.get('btn_gallery_ar') as string || '',
-      btn_gallery_en: formData.get('btn_gallery_en') as string || '',
-      btn_contact_ar: formData.get('btn_contact_ar') as string || '',
-      btn_contact_en: formData.get('btn_contact_en') as string || '',
-      feat_1_ar: formData.get('feat_1_ar') as string || '',
-      feat_1_en: formData.get('feat_1_en') as string || '',
-      feat_2_ar: formData.get('feat_2_ar') as string || '',
-      feat_2_en: formData.get('feat_2_en') as string || '',
-      feat_3_ar: formData.get('feat_3_ar') as string || '',
-      feat_3_en: formData.get('feat_3_en') as string || '',
-      bg_type: formData.get('bg_type') as string || 'IMAGE',
+      title_ar: body.title_ar || '',
+      title_en: body.title_en || '',
+      tagline_ar: body.tagline_ar || '',
+      tagline_en: body.tagline_en || '',
+      btn_gallery_ar: body.btn_gallery_ar || '',
+      btn_gallery_en: body.btn_gallery_en || '',
+      btn_contact_ar: body.btn_contact_ar || '',
+      btn_contact_en: body.btn_contact_en || '',
+      feat_1_ar: body.feat_1_ar || '',
+      feat_1_en: body.feat_1_en || '',
+      feat_2_ar: body.feat_2_ar || '',
+      feat_2_en: body.feat_2_en || '',
+      feat_3_ar: body.feat_3_ar || '',
+      feat_3_en: body.feat_3_en || '',
+      bg_type: body.bg_type || 'IMAGE',
       image_url: finalImageUrl,
-      overlay_opacity: parseFloat(formData.get('overlay') as string) || 0.5
+      overlay_opacity: parseFloat(body.overlay) || 0.5
     }
 
     const updated = await prisma.hero.upsert({

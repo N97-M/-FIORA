@@ -6,15 +6,16 @@ import { useRouter } from 'next/navigation'
 interface Category { id: string; name_ar: string; name_en: string }
 interface GalleryItem {
   id: string; image_url: string; title_ar: string; title_en: string
-  category?: { name_en: string }; categoryId: string
+  desc_ar?: string; desc_en?: string; category?: { name_en: string }; categoryId: string
 }
 
 interface Props {
   gallery: GalleryItem[]
   categories: Category[]
+  isFeaturedMode?: boolean
 }
 
-export default function GalleryClient({ gallery, categories: initialCategories }: Props) {
+export default function GalleryClient({ gallery, categories: initialCategories, isFeaturedMode }: Props) {
   const router = useRouter()
   const [uploading, setUploading] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
@@ -22,6 +23,31 @@ export default function GalleryClient({ gallery, categories: initialCategories }
   const [categories, setCategories] = useState<Category[]>(initialCategories)
   const [catStatus, setCatStatus] = useState<{ type: 'success' | 'error'; msg: string } | null>(null)
   const [addingCat, setAddingCat] = useState(false)
+  const [editingItem, setEditingItem] = useState<GalleryItem | null>(null)
+  const [formValues, setFormValues] = useState({ title_ar: '', title_en: '', desc_ar: '', desc_en: '', categoryId: '' })
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormValues({ ...formValues, [e.target.name]: e.target.value })
+  }
+
+  const startEdit = (item: GalleryItem) => {
+    setEditingItem(item)
+    setFormValues({
+      title_ar: item.title_ar,
+      title_en: item.title_en,
+      desc_ar: item.desc_ar || '',
+      desc_en: item.desc_en || '',
+      categoryId: item.categoryId
+    })
+    setPreview(item.image_url)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const cancelEdit = () => {
+    setEditingItem(null)
+    setFormValues({ title_ar: '', title_en: '', desc_ar: '', desc_en: '', categoryId: '' })
+    setPreview(null)
+  }
 
   // ── Add Category ────────────────────────────────────────────────────────────
   async function handleAddCategory(e: React.FormEvent<HTMLFormElement>) {
@@ -76,8 +102,9 @@ export default function GalleryClient({ gallery, categories: initialCategories }
     const file = formData.get('media_file') as File
 
     try {
+      let imageUrl = editingItem ? editingItem.image_url : ''
+      
       // 1. Upload file via API Route
-      let imageUrl = ''
       if (file && file.size > 0) {
         const uploadForm = new FormData()
         uploadForm.append('file', file)
@@ -98,25 +125,32 @@ export default function GalleryClient({ gallery, categories: initialCategories }
           throw new Error(data.error || 'Upload failed')
         }
         imageUrl = data.url
-      } else {
+      } else if (!editingItem) {
         throw new Error('Please select an image to upload.')
       }
 
       // 2. Save to DB via API
       const payload = {
-        title_ar: formData.get('title_ar') as string,
-        title_en: formData.get('title_en') as string,
-        desc_ar:  formData.get('desc_ar')  as string,
-        desc_en:  formData.get('desc_en')  as string,
-        categoryId: formData.get('categoryId') as string,
+        title_ar: formValues.title_ar,
+        title_en: formValues.title_en,
+        desc_ar:  formValues.desc_ar,
+        desc_en:  formValues.desc_en,
+        categoryId: formValues.categoryId || categories[0]?.id,
         image_url: imageUrl,
+        ...(isFeaturedMode && { isFeatured: true }),
       }
-      const saveRes = await fetch('/api/gallery', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-      if (!saveRes.ok) throw new Error('Failed to save item')
+      
+      if (editingItem) {
+        const updateRes = await fetch('/api/gallery', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: editingItem.id, ...payload }) })
+        if (!updateRes.ok) throw new Error('Failed to update item')
+        setStatus({ type: 'success', msg: '✅ Image updated successfully!' })
+      } else {
+        const saveRes = await fetch('/api/gallery', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+        if (!saveRes.ok) throw new Error('Failed to save item')
+        setStatus({ type: 'success', msg: '✅ Image added successfully!' })
+      }
 
-      setStatus({ type: 'success', msg: '✅ Image added successfully!' })
-      form.reset()
-      setPreview(null)
+      cancelEdit()
       router.refresh()
     } catch (err: any) {
       setStatus({ type: 'error', msg: `❌ ${err.message}` })
@@ -138,6 +172,7 @@ export default function GalleryClient({ gallery, categories: initialCategories }
   return (
     <>
       {/* ── Manage Categories ── */}
+      {!isFeaturedMode && (
       <div style={{ background: 'rgba(255,255,255,0.02)', padding: '24px 30px', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '24px' }}>
         <h3 style={{ marginBottom: '18px', color: '#DBC07E', fontFamily: 'Playfair Display', fontSize: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <i className="fas fa-tags" style={{ fontSize: '18px' }}></i> Manage Categories
@@ -178,10 +213,13 @@ export default function GalleryClient({ gallery, categories: initialCategories }
           ))}
         </div>
       </div>
+      )}
 
-      {/* ── Add Image Form ── */}
+      {/* ── Add/Edit Image Form ── */}
       <div style={{ background: 'rgba(255,255,255,0.02)', padding: '30px', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '40px' }}>
-        <h3 style={{ marginBottom: '20px', color: '#DBC07E', fontFamily: 'Playfair Display', fontSize: '24px' }}>Add New Project / Image</h3>
+        <h3 style={{ marginBottom: '20px', color: '#DBC07E', fontFamily: 'Playfair Display', fontSize: '24px' }}>
+          {editingItem ? (isFeaturedMode ? 'Edit Featured Project' : 'Edit Project') : (isFeaturedMode ? 'Add New Featured Project' : 'Add New Project')}
+        </h3>
 
         {status && (
           <div style={{ padding: '12px 16px', borderRadius: '8px', marginBottom: '20px', background: status.type === 'success' ? 'rgba(52,211,153,0.1)' : 'rgba(255,68,68,0.1)', border: `1px solid ${status.type === 'success' ? '#34d39944' : '#ff444444'}`, color: status.type === 'success' ? '#34d399' : '#ff6666' }}>
@@ -196,11 +234,11 @@ export default function GalleryClient({ gallery, categories: initialCategories }
               <h4 style={{ color: '#DBC07E', fontSize: '16px', margin: 0 }}>Arabic Content</h4>
               <div style={{ display: 'grid', gap: '5px' }}>
                 <label style={{ fontSize: '12px', color: '#aaa' }}>Title (AR)</label>
-                <input name="title_ar" style={inputStyle} />
+                <input name="title_ar" value={formValues.title_ar} onChange={handleInputChange} style={inputStyle} />
               </div>
               <div style={{ display: 'grid', gap: '5px' }}>
                 <label style={{ fontSize: '12px', color: '#aaa' }}>Description (AR)</label>
-                <textarea name="desc_ar" rows={2} style={{ ...inputStyle, resize: 'vertical' }} />
+                <textarea name="desc_ar" value={formValues.desc_ar} onChange={handleInputChange} rows={2} style={{ ...inputStyle, resize: 'vertical' }} />
               </div>
             </div>
             {/* English */}
@@ -208,33 +246,39 @@ export default function GalleryClient({ gallery, categories: initialCategories }
               <h4 style={{ color: '#DBC07E', fontSize: '16px', margin: 0 }}>English Content</h4>
               <div style={{ display: 'grid', gap: '5px' }}>
                 <label style={{ fontSize: '12px', color: '#aaa' }}>Title (EN)</label>
-                <input name="title_en" style={inputStyle} />
+                <input name="title_en" value={formValues.title_en} onChange={handleInputChange} style={inputStyle} />
               </div>
               <div style={{ display: 'grid', gap: '5px' }}>
                 <label style={{ fontSize: '12px', color: '#aaa' }}>Description (EN)</label>
-                <textarea name="desc_en" rows={2} style={{ ...inputStyle, resize: 'vertical' }} />
+                <textarea name="desc_en" value={formValues.desc_en} onChange={handleInputChange} rows={2} style={{ ...inputStyle, resize: 'vertical' }} />
               </div>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr auto', gap: '15px', alignItems: 'end' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr auto auto', gap: '15px', alignItems: 'end' }}>
             <div style={{ display: 'grid', gap: '5px' }}>
-              <label style={{ fontSize: '12px', color: '#aaa' }}>Upload Image</label>
-              <input type="file" name="media_file" accept="image/*" required
-                onChange={e => { const f = e.target.files?.[0]; setPreview(f ? URL.createObjectURL(f) : null) }}
+              <label style={{ fontSize: '12px', color: '#aaa' }}>Upload Image {editingItem && '(Optional)'}</label>
+              <input type="file" name="media_file" accept="image/*" required={!editingItem}
+                onChange={e => { const f = e.target.files?.[0]; setPreview(f ? URL.createObjectURL(f) : (editingItem ? editingItem.image_url : null)) }}
                 style={{ ...inputStyle, padding: '7px' }} />
               {preview && <img src={preview} alt="preview" style={{ height: '80px', objectFit: 'cover', borderRadius: '6px', marginTop: '6px' }} />}
             </div>
             <div style={{ display: 'grid', gap: '5px' }}>
               <label style={{ fontSize: '12px', color: '#aaa' }}>Category</label>
-              <select name="categoryId" required style={inputStyle}>
+              <select name="categoryId" required value={formValues.categoryId} onChange={handleInputChange} style={inputStyle}>
+                <option value="">Select Category</option>
                 {categories.filter(c => c.name_en !== 'All').map(cat => (
                   <option key={cat.id} value={cat.id}>{cat.name_ar} | {cat.name_en}</option>
                 ))}
               </select>
             </div>
+            {editingItem && (
+              <button type="button" onClick={cancelEdit} style={{ padding: '10px 20px', background: '#555', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', height: '42px', whiteSpace: 'nowrap' }}>
+                Cancel
+              </button>
+            )}
             <button type="submit" disabled={uploading} style={{ padding: '10px 28px', background: uploading ? '#555' : '#DBC07E', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: uploading ? 'not-allowed' : 'pointer', height: '42px', whiteSpace: 'nowrap' }}>
-              {uploading ? '⏳ Uploading...' : 'Add Project'}
+              {uploading ? '⏳ Saving...' : (editingItem ? 'Save Changes' : 'Add Project')}
             </button>
           </div>
         </form>
@@ -258,9 +302,14 @@ export default function GalleryClient({ gallery, categories: initialCategories }
                 <span style={{ fontSize: '12px', background: '#222', padding: '4px 8px', borderRadius: '4px', color: '#DBC07E' }}>
                   {item.category?.name_en}
                 </span>
-                <button onClick={() => handleDelete(item.id)} style={{ background: 'rgba(255,68,68,0.1)', border: '1px solid rgba(255,68,68,0.2)', color: '#ff4444', cursor: 'pointer', padding: '6px 10px', borderRadius: '4px' }}>
-                  <i className="fas fa-trash"></i>
-                </button>
+                <div>
+                  <button onClick={() => startEdit(item)} style={{ background: 'rgba(219,192,126,0.1)', border: '1px solid rgba(219,192,126,0.2)', color: '#DBC07E', cursor: 'pointer', padding: '6px 10px', borderRadius: '4px', marginRight: '5px' }}>
+                    <i className="fas fa-edit"></i>
+                  </button>
+                  <button onClick={() => handleDelete(item.id)} style={{ background: 'rgba(255,68,68,0.1)', border: '1px solid rgba(255,68,68,0.2)', color: '#ff4444', cursor: 'pointer', padding: '6px 10px', borderRadius: '4px' }}>
+                    <i className="fas fa-trash"></i>
+                  </button>
+                </div>
               </div>
             </div>
           </div>

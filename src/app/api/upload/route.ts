@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(await file.arrayBuffer())
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
     const filename = `${Date.now()}-${safeName}`
-    
+
     // Check if Supabase URL is configured
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
        console.error('Supabase is not configured.')
@@ -47,5 +47,13 @@ export async function POST(request: NextRequest) {
   } catch (err: any) {
     console.error('Upload error:', err)
     return NextResponse.json({ error: err.message }, { status: 500 })
+  }
+}
+
+// Increase request body size limit for uploads (up to 20 MB)
+export const config = {
+  api: {
+    bodyParser: false,
+    sizeLimit: '20mb'
   }
 }

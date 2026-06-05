@@ -2,18 +2,42 @@
 
 import { useState } from 'react'
 
-const InputField = ({ label, name, defaultValue }: { label: string, name: string, defaultValue?: string }) => (
+const InputField = ({ label, name, value, onChange }: { label: string, name: string, value?: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) => (
   <div style={{ display: 'grid', gap: '8px' }}>
     <label style={{ color: '#aaa', fontSize: '13px' }}>{label}</label>
-    <input name={name} defaultValue={defaultValue} style={{ padding: '10px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '6px', width: '100%', boxSizing: 'border-box' }} />
+    <input name={name} value={value || ''} onChange={onChange} style={{ padding: '10px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '6px', width: '100%', boxSizing: 'border-box' }} />
   </div>
 )
-
 
 export default function HeroForm({ initialHero }: { initialHero: any }) {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
+  const [mediaFile, setMediaFile] = useState<File | null>(null)
+
+  const [formData, setFormData] = useState({
+    title_ar: initialHero?.title_ar || '',
+    title_en: initialHero?.title_en || '',
+    tagline_ar: initialHero?.tagline_ar || '',
+    tagline_en: initialHero?.tagline_en || '',
+    btn_gallery_ar: initialHero?.btn_gallery_ar || '',
+    btn_gallery_en: initialHero?.btn_gallery_en || '',
+    btn_contact_ar: initialHero?.btn_contact_ar || '',
+    btn_contact_en: initialHero?.btn_contact_en || '',
+    feat_1_ar: initialHero?.feat_1_ar || '',
+    feat_1_en: initialHero?.feat_1_en || '',
+    feat_2_ar: initialHero?.feat_2_ar || '',
+    feat_2_en: initialHero?.feat_2_en || '',
+    feat_3_ar: initialHero?.feat_3_ar || '',
+    feat_3_en: initialHero?.feat_3_en || '',
+    bg_type: initialHero?.bg_type || 'IMAGE',
+    overlay: initialHero?.overlay_opacity?.toString() || '0.5',
+  })
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -21,27 +45,49 @@ export default function HeroForm({ initialHero }: { initialHero: any }) {
     setMessage('')
     setError('')
 
-    const formData = new FormData(e.currentTarget)
-
     try {
+      // Step 1: If a new file was selected, upload it first via /api/upload
+      let imageUrl = initialHero?.image_url || '/hero-bg.jpg'
+
+      if (mediaFile && mediaFile.size > 0) {
+        // Client-side file size validation (Vercel limit is 4.5MB for serverless functions)
+        const MAX_FILE_SIZE = 4.5 * 1024 * 1024 // 4.5 MB
+        if (mediaFile.size > MAX_FILE_SIZE) {
+          throw new Error('The selected media file is too large. The maximum allowed size is 4.5MB. Please compress your file or use a smaller version.')
+        }
+
+        const uploadForm = new FormData()
+        uploadForm.append('file', mediaFile)
+
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          body: uploadForm
+        })
+
+        if (!uploadRes.ok) {
+          if (uploadRes.status === 413) {
+            throw new Error('The selected background media file is too large. Please compress the file or use a smaller version.')
+          }
+          const uploadErr = await uploadRes.json().catch(() => ({}))
+          throw new Error(uploadErr.error || 'Failed to upload media file')
+        }
+
+        const uploadData = await uploadRes.json()
+        imageUrl = uploadData.url
+      }
+
+      // Step 2: Send all hero data as JSON
       const res = await fetch('/api/hero', {
         method: 'POST',
-        body: formData
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          image_url: imageUrl,
+        })
       })
 
-      let result: any = {}
-      if (res.ok) {
-        result = await res.json()
-      } else {
-        if (res.status === 413) {
-          throw new Error('The selected background media file is too large (Vercel limits uploads to 4.5MB). Please compress the file or use a smaller version.')
-        }
-        try {
-          result = await res.json()
-        } catch {
-          const text = await res.text()
-          throw new Error(text || 'Something went wrong')
-        }
+      if (!res.ok) {
+        const result = await res.json().catch(() => ({}))
         throw new Error(result.error || 'Something went wrong')
       }
 
@@ -73,14 +119,14 @@ export default function HeroForm({ initialHero }: { initialHero: any }) {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} encType="multipart/form-data" style={{ display: 'grid', gap: '30px' }}>
+      <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '30px' }}>
         {/* Background Settings */}
         <div style={{ background: 'rgba(0,0,0,0.3)', padding: '20px', borderRadius: '10px', border: '1px solid #222' }}>
           <h4 style={{ marginBottom: '15px', color: '#DBC07E' }}>Background Settings</h4>
           <div className="admin-grid-3">
             <div style={{ display: 'grid', gap: '8px' }}>
               <label style={{ color: '#aaa', fontSize: '13px' }}>Background Type</label>
-              <select name="bg_type" defaultValue={initialHero?.bg_type || 'IMAGE'} style={{ padding: '10px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '6px' }}>
+              <select name="bg_type" value={formData.bg_type} onChange={handleChange} style={{ padding: '10px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '6px' }}>
                 <option value="IMAGE">Image</option>
                 <option value="VIDEO">Video</option>
               </select>
@@ -88,11 +134,17 @@ export default function HeroForm({ initialHero }: { initialHero: any }) {
             
             <div style={{ display: 'grid', gap: '8px' }}>
               <label style={{ color: '#aaa', fontSize: '13px' }}>Upload Media (Image or Video)</label>
-              <input type="file" name="media_file" accept="image/*,video/mp4,video/webm" style={{ padding: '7px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '6px' }} />
+              <input
+                type="file"
+                accept="image/*,video/mp4,video/webm"
+                onChange={(e) => setMediaFile(e.target.files?.[0] || null)}
+                style={{ padding: '7px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '6px' }}
+              />
               <small style={{ color: '#888', fontSize: '11px', wordBreak: 'break-all' }}>Leave empty to keep current background: {initialHero?.image_url}</small>
+              <small style={{ color: '#888', fontSize: '11px' }}>Max file size: 4.5MB</small>
             </div>
 
-            <InputField label="Dark Overlay (0.0 - 1.0)" name="overlay" defaultValue={initialHero?.overlay_opacity || '0.5'} />
+            <InputField label="Dark Overlay (0.0 - 1.0)" name="overlay" value={formData.overlay} onChange={handleChange} />
           </div>
         </div>
 
@@ -100,24 +152,24 @@ export default function HeroForm({ initialHero }: { initialHero: any }) {
         <div className="admin-grid-2">
           <div style={{ display: 'grid', gap: '20px', background: 'rgba(0,0,0,0.3)', padding: '20px', borderRadius: '10px', border: '1px solid #222' }}>
             <h4 style={{ color: '#DBC07E' }}>Arabic Content</h4>
-            <InputField label="Title" name="title_ar" defaultValue={initialHero?.title_ar} />
-            <InputField label="Tagline" name="tagline_ar" defaultValue={initialHero?.tagline_ar} />
-            <InputField label="Button 1 (Gallery)" name="btn_gallery_ar" defaultValue={initialHero?.btn_gallery_ar} />
-            <InputField label="Button 2 (Contact)" name="btn_contact_ar" defaultValue={initialHero?.btn_contact_ar} />
-            <InputField label="Feature 1 (Rental)" name="feat_1_ar" defaultValue={initialHero?.feat_1_ar} />
-            <InputField label="Feature 2 (Design)" name="feat_2_ar" defaultValue={initialHero?.feat_2_ar} />
-            <InputField label="Feature 3 (Delivery)" name="feat_3_ar" defaultValue={initialHero?.feat_3_ar} />
+            <InputField label="Title" name="title_ar" value={formData.title_ar} onChange={handleChange} />
+            <InputField label="Tagline" name="tagline_ar" value={formData.tagline_ar} onChange={handleChange} />
+            <InputField label="Button 1 (Gallery)" name="btn_gallery_ar" value={formData.btn_gallery_ar} onChange={handleChange} />
+            <InputField label="Button 2 (Contact)" name="btn_contact_ar" value={formData.btn_contact_ar} onChange={handleChange} />
+            <InputField label="Feature 1 (Rental)" name="feat_1_ar" value={formData.feat_1_ar} onChange={handleChange} />
+            <InputField label="Feature 2 (Design)" name="feat_2_ar" value={formData.feat_2_ar} onChange={handleChange} />
+            <InputField label="Feature 3 (Delivery)" name="feat_3_ar" value={formData.feat_3_ar} onChange={handleChange} />
           </div>
 
           <div style={{ display: 'grid', gap: '20px', background: 'rgba(0,0,0,0.3)', padding: '20px', borderRadius: '10px', border: '1px solid #222' }}>
             <h4 style={{ color: '#DBC07E' }}>English Content</h4>
-            <InputField label="Title" name="title_en" defaultValue={initialHero?.title_en} />
-            <InputField label="Tagline" name="tagline_en" defaultValue={initialHero?.tagline_en} />
-            <InputField label="Button 1 (Gallery)" name="btn_gallery_en" defaultValue={initialHero?.btn_gallery_en} />
-            <InputField label="Button 2 (Contact)" name="btn_contact_en" defaultValue={initialHero?.btn_contact_en} />
-            <InputField label="Feature 1 (Rental)" name="feat_1_en" defaultValue={initialHero?.feat_1_en} />
-            <InputField label="Feature 2 (Design)" name="feat_2_en" defaultValue={initialHero?.feat_2_en} />
-            <InputField label="Feature 3 (Delivery)" name="feat_3_en" defaultValue={initialHero?.feat_3_en} />
+            <InputField label="Title" name="title_en" value={formData.title_en} onChange={handleChange} />
+            <InputField label="Tagline" name="tagline_en" value={formData.tagline_en} onChange={handleChange} />
+            <InputField label="Button 1 (Gallery)" name="btn_gallery_en" value={formData.btn_gallery_en} onChange={handleChange} />
+            <InputField label="Button 2 (Contact)" name="btn_contact_en" value={formData.btn_contact_en} onChange={handleChange} />
+            <InputField label="Feature 1 (Rental)" name="feat_1_en" value={formData.feat_1_en} onChange={handleChange} />
+            <InputField label="Feature 2 (Design)" name="feat_2_en" value={formData.feat_2_en} onChange={handleChange} />
+            <InputField label="Feature 3 (Delivery)" name="feat_3_en" value={formData.feat_3_en} onChange={handleChange} />
           </div>
         </div>
 

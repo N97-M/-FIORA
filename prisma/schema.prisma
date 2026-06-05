@@ -1,10 +1,10 @@
 generator client {
   provider   = "prisma-client-js"
-  engineType = "binary"
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider  = "sqlite"
+  url       = "file:./dev.db"
 }
 
 // 1. Admin Users
@@ -62,10 +62,12 @@ model Navbar {
   nav_services_ar   String   @default("خدماتنا")
   nav_gallery_en    String   @default("Gallery")
   nav_gallery_ar    String   @default("أعمالنا")
-  nav_how_en        String   @default("How to Rent")
-  nav_how_ar        String   @default("كيفية التأجير")
+  nav_how_en        String   @default("How We Work")
+  nav_how_ar        String   @default("كيف نعمل")
   nav_contact_en    String   @default("Contact")
   nav_contact_ar    String   @default("اتصل بنا")
+  nav_testimonials_en String @default("Testimonials")
+  nav_testimonials_ar String @default("آراء العملاء")
 
   sticky_enabled    Boolean  @default(true)
   lang_switch_show  Boolean  @default(true)
@@ -149,11 +151,45 @@ model Settings {
 // 9. Theme Settings
 model Theme {
   id               Int      @id @default(1)
+  
+  // Website
+  bg_website       String   @default("#ffffff")
+  text_primary     String   @default("#000000")
+  text_secondary   String   @default("#555555")
+  accent_gold      String   @default("#DBC07E")
+
+  // Header
+  bg_header        String   @default("transparent")
+  text_header      String   @default("#000000")
+  text_header_hover String  @default("#DBC07E")
+
+  // Footer
+  bg_footer        String   @default("#0a0a0a")
+  text_footer      String   @default("#ffffff")
+  link_footer      String   @default("rgba(255,255,255,0.7)")
+  accent_footer    String   @default("#DBC07E")
+
+  // Cards
+  bg_card          String   @default("#FDFBF7")
+  text_card        String   @default("#000000")
+
+  // Badges & Categories
+  bg_badge         String   @default("#222222")
+  text_badge       String   @default("#DBC07E")
+
+  // Buttons
+  bg_button        String   @default("#000000")
+  text_button      String   @default("#ffffff")
+
+  // Legacy/Other
   primary_gold     String   @default("#DBC07E")
   bg_dark          String   @default("#0a0a0a")
   text_white       String   @default("#ffffff")
+  background_color String   @default("#ffffff")
+  text_color       String   @default("#000000")
   border_radius    String   @default("15px")
   glass_opacity    Float    @default(0.1)
+
   updatedAt        DateTime @updatedAt
 }
 
@@ -166,5 +202,70 @@ model SEO {
   meta_desc_ar     String   @default("تأجير ديكورات المناسبات الفاخرة في السودان.")
   og_image         String?
   keywords         String   @default("luxury, event, decor, sudan, fiora")
+  updatedAt        DateTime @updatedAt
+}
+
+// 11. Before & After
+model BeforeAfter {
+  id           String   @id @default(uuid())
+  title_en     String
+  title_ar     String
+  desc_en      String
+  desc_ar      String
+  before_image String
+  after_image  String
+  order        Int      @default(0)
+  isVisible    Boolean  @default(true)
+  updatedAt    DateTime @updatedAt
+}
+
+// 12. Process Steps (How We Work)
+model ProcessStep {
+  id          String   @id @default(uuid())
+  step_number Int
+  title_en    String
+  title_ar    String
+  desc_en     String
+  desc_ar     String
+  isVisible   Boolean  @default(true)
+  updatedAt   DateTime @updatedAt
+}
+
+// 13. Testimonials
+model Testimonial {
+  id             String   @id @default(uuid())
+  client_name_en String
+  client_name_ar String
+  content_en     String
+  content_ar     String
+  rating         Int      @default(5)
+  isVisible      Boolean  @default(true)
+  updatedAt      DateTime @updatedAt
+}
+
+// 14. Footer Settings
+model Footer {
+  id               Int      @id @default(1)
+  logo_url         String   @default("/logo.png")
+  description_en   String   @default("A creative studio designing elegant spaces and event experiences.")
+  description_ar   String   @default("استوديو إبداعي لتصميم المساحات الأنيقة وتنسيق المناسبات.")
+  copyright_en     String   @default("All rights reserved.")
+  copyright_ar     String   @default("جميع الحقوق محفوظة.")
+  slogan_en        String   @default("LUXURY STARTS HERE")
+  slogan_ar        String   @default("الفخامة تبدأ من هنا")
+  
+  // Contact overrides for footer (optional, can fallback to Settings)
+  address_en       String   @default("Khartoum, Sudan")
+  address_ar       String   @default("الخرطوم، السودان")
+  email            String   @default("info@fiora.com")
+  
+  // Quick Links
+  link1_en         String   @default("Interior Design")
+  link1_ar         String   @default("تصميم داخلي")
+  link2_en         String   @default("Event Styling")
+  link2_ar         String   @default("تنسيق المناسبات")
+  link3_en         String   @default("Space Planning")
+  link3_ar         String   @default("تخطيط المساحات")
+
   updatedAt        DateTime @updatedAt
 }

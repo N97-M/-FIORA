@@ -6,11 +6,16 @@ export default function AdminSidebar() {
   const pathname = usePathname()
 
   const links = [
+    { name: 'Theme Colors',  href: '/admin/theme',     icon: 'fa-palette' },
     { name: 'Hero Section',  href: '/admin/dashboard', icon: 'fa-home' },
     { name: 'Navigation',    href: '/admin/navbar',    icon: 'fa-compass' },
     { name: 'About Us',      href: '/admin/about',     icon: 'fa-info-circle' },
     { name: 'Services',      href: '/admin/services',  icon: 'fa-concierge-bell' },
     { name: 'Gallery',       href: '/admin/gallery',   icon: 'fa-images' },
+    { name: 'Featured Projects', href: '/admin/featured', icon: 'fa-star' },
+    { name: 'How We Work',   href: '/admin/process',   icon: 'fa-list-ol' },
+    { name: 'Testimonials',  href: '/admin/testimonials', icon: 'fa-comments' },
+    { name: 'Footer',        href: '/admin/footer',    icon: 'fa-shoe-prints' },
     { name: 'Settings',      href: '/admin/settings',  icon: 'fa-cog' },
   ]
 
