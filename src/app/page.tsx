@@ -136,7 +136,7 @@ export default async function HomePage() {
           <div className="container">
               <nav>
                   <a href="#home" className="logo">
-                      <img src="/logo.png" alt="FIORA" className="main-logo" style={{ filter: 'var(--bg-header)' === '#0a0a0a' ? 'invert(0)' : 'invert(1)' }} />
+                      <img src="/logo.png" alt="FIORA" className="main-logo" style={{ filter: theme?.bg_header === '#0a0a0a' ? 'invert(0)' : 'invert(1)' }} />
                   </a>
                   <ul className="nav-links" id="navLinks">
                       <li className="mobile-menu-close">&times;</li>
@@ -508,7 +508,7 @@ export default async function HomePage() {
           <div className="container">
               <div className="footer-grid">
                   <div className="footer-brand">
-                      <img src={footer?.logo_url || "/logo.png"} alt="FIORA" className="footer-logo-img" style={{ filter: 'var(--bg-footer)' === '#0a0a0a' ? 'invert(0)' : 'invert(1)', opacity: 0.8 }} />
+                      <img src={footer?.logo_url || "/logo.png"} alt="FIORA" className="footer-logo-img" style={{ filter: theme?.bg_footer === '#0a0a0a' ? 'invert(0)' : 'invert(1)', opacity: 0.8 }} />
                       <p style={{ marginTop: '20px' }}>
                           <span className="ar-text">{footer?.description_ar || "استوديو إبداعي لتصميم المساحات الأنيقة وتنسيق المناسبات."}</span>
                           <span className="en-text">{footer?.description_en || "A creative studio designing elegant spaces and event experiences."}</span>
