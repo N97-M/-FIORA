@@ -74,6 +74,7 @@ export default async function HomePage() {
           /* Header */
           --bg-header: ${theme.bg_header || 'transparent'};
           --text-header: ${theme.text_header || '#000000'};
+          --text-header-mobile: ${theme.text_header_mobile || '#000000'};
           --text-header-hover: ${theme.text_header_hover || '#DBC07E'};
           
           /* Footer */
@@ -112,6 +113,9 @@ export default async function HomePage() {
         header { background-color: var(--bg-header); }
         .nav-links a { color: var(--text-header) !important; }
         .nav-links a:hover { color: var(--text-header-hover) !important; }
+        @media (max-width: 768px) {
+          .nav-links a { color: var(--text-header-mobile) !important; }
+        }
         
         .luxury-footer a { color: var(--link-footer) !important; }
         .luxury-footer i { color: var(--accent-footer) !important; }
@@ -132,7 +136,7 @@ export default async function HomePage() {
           <div className="container">
               <nav>
                   <a href="#home" className="logo">
-                      <img src="/logo.png" alt="FIORA" className="main-logo" style={{ filter: 'var(--bg-header)' === '#0a0a0a' ? 'invert(0)' : 'invert(1)' }} />
+                      <img src="/logo.png" alt="FIORA" className="main-logo" style={{ filter: theme?.bg_header === '#0a0a0a' ? 'invert(0)' : 'invert(1)' }} />
                   </a>
                   <ul className="nav-links" id="navLinks">
                       <li className="mobile-menu-close">&times;</li>
@@ -484,9 +488,11 @@ export default async function HomePage() {
                           <div className="icon-inner wa"><i className="fab fa-whatsapp"></i></div>
                       </a>
                       
-                      <a href="https://maps.google.com" target="_blank" className="contact-icon-item" title="Location" style={{ color: 'var(--dark-black)', borderColor: 'rgba(0,0,0,0.1)' }}>
-                                  <div className="icon-inner lc"><i className="fas fa-map-marker-alt"></i></div>
-                      </a>
+                      {settings?.location_url && (
+                        <a href={settings.location_url} target="_blank" className="contact-icon-item" title="Location" style={{ color: 'var(--dark-black)', borderColor: 'rgba(0,0,0,0.1)' }}>
+                            <div className="icon-inner lc"><i className="fas fa-map-marker-alt"></i></div>
+                        </a>
+                      )}
                       
                       {settings?.tiktok_url && (
                         <a href={settings.tiktok_url} target="_blank" className="contact-icon-item" title="TikTok" style={{ color: 'var(--dark-black)', borderColor: 'rgba(0,0,0,0.1)' }}>
@@ -502,7 +508,7 @@ export default async function HomePage() {
           <div className="container">
               <div className="footer-grid">
                   <div className="footer-brand">
-                      <img src={footer?.logo_url || "/logo.png"} alt="FIORA" className="footer-logo-img" style={{ filter: 'var(--bg-footer)' === '#0a0a0a' ? 'invert(0)' : 'invert(1)', opacity: 0.8 }} />
+                      <img src={footer?.logo_url || "/logo.png"} alt="FIORA" className="footer-logo-img" style={{ filter: theme?.bg_footer === '#0a0a0a' ? 'invert(0)' : 'invert(1)', opacity: 0.8 }} />
                       <p style={{ marginTop: '20px' }}>
                           <span className="ar-text">{footer?.description_ar || "استوديو إبداعي لتصميم المساحات الأنيقة وتنسيق المناسبات."}</span>
                           <span className="en-text">{footer?.description_en || "A creative studio designing elegant spaces and event experiences."}</span>
