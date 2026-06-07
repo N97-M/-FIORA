@@ -19,6 +19,7 @@ export async function POST(req: Request) {
     // Header
     bg_header: body.bg_header,
     text_header: body.text_header,
+    text_header_mobile: body.text_header_mobile,
     text_header_hover: body.text_header_hover,
 
     // Footer
@@ -54,6 +55,7 @@ export async function POST(req: Request) {
     accent_gold: body.accent_gold || '#DBC07E',
     bg_header: body.bg_header || 'transparent',
     text_header: body.text_header || '#000000',
+    text_header_mobile: body.text_header_mobile || body.text_header || '#000000',
     text_header_hover: body.text_header_hover || '#DBC07E',
     bg_footer: body.bg_footer || '#0a0a0a',
     text_footer: body.text_footer || '#ffffff',

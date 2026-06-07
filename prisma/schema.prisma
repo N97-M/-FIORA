@@ -163,6 +163,7 @@ model Theme {
   // Header
   bg_header        String   @default("transparent")
   text_header      String   @default("#000000")
+  text_header_mobile String @default("#000000")
   text_header_hover String  @default("#DBC07E")
 
   // Footer

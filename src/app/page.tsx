@@ -102,6 +102,11 @@ export default async function HomePage() {
           --dark-black: var(--text-primary);
           --text-muted: var(--text-secondary);
         }
+        @media (max-width: 768px) {
+          :root {
+            --text-header: ${theme.text_header_mobile || theme.text_header || '#000000'};
+          }
+        }
         main {
           background-color: var(--bg-website);
           color: var(--text-primary);

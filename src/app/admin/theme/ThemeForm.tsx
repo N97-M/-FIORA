@@ -18,6 +18,7 @@ export default function ThemeForm({ initialTheme }: { initialTheme: any }) {
     // Header
     bg_header: initialTheme?.bg_header || 'transparent',
     text_header: initialTheme?.text_header || '#000000',
+    text_header_mobile: initialTheme?.text_header_mobile || initialTheme?.text_header || '#000000',
     text_header_hover: initialTheme?.text_header_hover || '#DBC07E',
     
     // Footer
@@ -134,7 +135,8 @@ export default function ThemeForm({ initialTheme }: { initialTheme: any }) {
 
         <Section title="Header/Navigation">
           <ColorInput label="Header Background" name="bg_header" />
-          <ColorInput label="Header Link Color" name="text_header" />
+          <ColorInput label="Header Link Color (Desktop)" name="text_header" />
+          <ColorInput label="Header Link Color (Mobile)" name="text_header_mobile" />
           <ColorInput label="Header Hover Color" name="text_header_hover" />
         </Section>
 
