@@ -74,6 +74,7 @@ export default async function HomePage() {
           /* Header */
           --bg-header: ${theme.bg_header || 'transparent'};
           --text-header: ${theme.text_header || '#000000'};
+          --text-header-mobile: ${theme.text_header_mobile || '#000000'};
           --text-header-hover: ${theme.text_header_hover || '#DBC07E'};
           
           /* Footer */
@@ -112,6 +113,9 @@ export default async function HomePage() {
         header { background-color: var(--bg-header); }
         .nav-links a { color: var(--text-header) !important; }
         .nav-links a:hover { color: var(--text-header-hover) !important; }
+        @media (max-width: 768px) {
+          .nav-links a { color: var(--text-header-mobile) !important; }
+        }
         
         .luxury-footer a { color: var(--link-footer) !important; }
         .luxury-footer i { color: var(--accent-footer) !important; }
@@ -484,9 +488,11 @@ export default async function HomePage() {
                           <div className="icon-inner wa"><i className="fab fa-whatsapp"></i></div>
                       </a>
                       
-                      <a href="https://maps.google.com" target="_blank" className="contact-icon-item" title="Location" style={{ color: 'var(--dark-black)', borderColor: 'rgba(0,0,0,0.1)' }}>
-                                  <div className="icon-inner lc"><i className="fas fa-map-marker-alt"></i></div>
-                      </a>
+                      {settings?.location_url && (
+                        <a href={settings.location_url} target="_blank" className="contact-icon-item" title="Location" style={{ color: 'var(--dark-black)', borderColor: 'rgba(0,0,0,0.1)' }}>
+                            <div className="icon-inner lc"><i className="fas fa-map-marker-alt"></i></div>
+                        </a>
+                      )}
                       
                       {settings?.tiktok_url && (
                         <a href={settings.tiktok_url} target="_blank" className="contact-icon-item" title="TikTok" style={{ color: 'var(--dark-black)', borderColor: 'rgba(0,0,0,0.1)' }}>

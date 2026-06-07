@@ -92,26 +92,15 @@ export default function SettingsForm({ initialSettings }: { initialSettings: any
             </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
             <div style={{ display: 'grid', gap: '10px' }}>
                 <label style={{ color: '#aaa', fontSize: '14px' }}>TikTok Link</label>
                 <input name="tiktok_url" defaultValue={initialSettings?.tiktok_url} style={{ padding: '12px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '8px', width: '100%', boxSizing: 'border-box' }} />
             </div>
             <div style={{ display: 'grid', gap: '10px' }}>
-                <label style={{ color: '#aaa', fontSize: '14px' }}>Instagram Link</label>
-                <input name="instagram_url" defaultValue={initialSettings?.instagram_url} style={{ padding: '12px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '8px', width: '100%', boxSizing: 'border-box' }} />
+                <label style={{ color: '#aaa', fontSize: '14px' }}>Location Link</label>
+                <input name="location_url" defaultValue={initialSettings?.location_url} style={{ padding: '12px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '8px', width: '100%', boxSizing: 'border-box' }} />
             </div>
-            <div style={{ display: 'grid', gap: '10px' }}>
-                <label style={{ color: '#aaa', fontSize: '14px' }}>Snapchat Link</label>
-                <input name="snapchat_url" defaultValue={initialSettings?.snapchat_url} style={{ padding: '12px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '8px', width: '100%', boxSizing: 'border-box' }} />
-            </div>
-        </div>
-
-        {/* Services Center Image Upload */}
-        <div style={{ display: 'grid', gap: '10px', background: 'rgba(0,0,0,0.3)', padding: '20px', borderRadius: '10px', border: '1px solid #222' }}>
-            <label style={{ color: '#DBC07E', fontSize: '14px' }}>Services Center Orbit Image</label>
-            <input type="file" name="services_center_image" accept="image/*" style={{ padding: '10px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '8px' }} />
-            <small style={{ color: '#888', fontSize: '11px' }}>Leave empty to keep current image: {initialSettings?.services_center_image || 'None'}</small>
         </div>
 
         <button 
