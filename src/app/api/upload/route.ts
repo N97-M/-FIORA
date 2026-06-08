@@ -49,11 +49,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: err.message }, { status: 500 })
   }
 }
-
-// Increase request body size limit for uploads (up to 20 MB)
-export const config = {
-  api: {
-    bodyParser: false,
-    sizeLimit: '20mb'
-  }
-}
