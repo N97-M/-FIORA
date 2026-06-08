@@ -53,41 +53,53 @@ export default function AdminServices() {
   };
 
   return (
-    <div style={{ padding: '30px', maxWidth: '1200px', margin: '0 auto', color: '#fff' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: '300', letterSpacing: '1px', color: '#DBC07E', margin: 0 }}>
+    <div className="p-6 max-w-7xl mx-auto">
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-3xl font-light tracking-wide" style={{ color: "#DBC07E" }}>
           Manage Services
         </h2>
       </div>
 
-      <div style={{ backgroundColor: '#0a0a0a', borderRadius: '16px', border: '1px solid #222', boxShadow: '0 20px 40px rgba(0,0,0,0.4)', overflow: 'hidden' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+      <div className="bg-[#111] border border-[#222] rounded-lg overflow-hidden shadow-lg">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left whitespace-nowrap">
             <thead>
-              <tr style={{ backgroundColor: '#111', borderBottom: '1px solid #333' }}>
-                <th style={{ padding: '20px', color: '#888', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: '600', width: '10%' }}>Icon</th>
-                <th style={{ padding: '20px', color: '#888', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: '600', width: '35%' }}>Title (English)</th>
-                <th style={{ padding: '20px', color: '#888', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: '600', width: '35%', textAlign: 'right' }}>Title (Arabic)</th>
-                <th style={{ padding: '20px', color: '#888', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: '600', width: '20%', textAlign: 'center' }}>Actions</th>
+              <tr className="border-b border-[#333] bg-[#0a0a0a]">
+                <th className="px-6 py-4 text-sm font-medium text-[#DBC07E] uppercase tracking-wider text-center w-16">Icon</th>
+                <th className="px-6 py-4 text-sm font-medium text-[#DBC07E] uppercase tracking-wider">English Title</th>
+                <th className="px-6 py-4 text-sm font-medium text-[#DBC07E] uppercase tracking-wider text-right" dir="rtl">Arabic Title (العنوان)</th>
+                <th className="px-6 py-4 text-sm font-medium text-[#DBC07E] uppercase tracking-wider text-right">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-[#222]">
               {services.map((svc) => (
-                <tr key={svc.id} style={{ borderBottom: '1px solid #1a1a1a', transition: 'background-color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#111'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
-                  <td style={{ padding: '20px', color: '#DBC07E', fontSize: '20px' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: 'rgba(219, 192, 126, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <i className={svc.icon}></i>
+                <tr key={svc.id} className="hover:bg-[#1a1a1a] transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="w-10 h-10 mx-auto rounded bg-[#222] text-[#DBC07E] flex items-center justify-center border border-[#333]">
+                      <i className={svc.icon || "fas fa-star"}></i>
                     </div>
                   </td>
-                  <td style={{ padding: '20px', color: '#eee', fontSize: '15px', fontWeight: '500' }}>{svc.title_en}</td>
-                  <td style={{ padding: '20px', color: '#eee', fontSize: '15px', fontWeight: '500', textAlign: 'right' }} dir="rtl">{svc.title_ar}</td>
-                  <td style={{ padding: '20px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
-                      <button onClick={() => startEdit(svc)} style={{ padding: '8px 16px', backgroundColor: 'rgba(219, 192, 126, 0.1)', color: '#DBC07E', border: '1px solid rgba(219, 192, 126, 0.2)', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '500', transition: 'all 0.2s' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#DBC07E'; e.currentTarget.style.color = '#000'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(219, 192, 126, 0.1)'; e.currentTarget.style.color = '#DBC07E'; }}>
-                        Edit
+                  <td className="px-6 py-4">
+                    <div className="text-white font-medium text-lg">{svc.title_en}</div>
+                    {svc.desc_en && <div className="text-gray-400 text-sm truncate max-w-xs mt-1">{svc.desc_en}</div>}
+                  </td>
+                  <td className="px-6 py-4 text-right" dir="rtl">
+                    <div className="text-white font-medium text-lg font-arabic">{svc.title_ar}</div>
+                    {svc.desc_ar && <div className="text-gray-400 text-sm truncate max-w-xs mt-1 font-arabic">{svc.desc_ar}</div>}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex justify-end gap-3">
+                      <button
+                        onClick={() => startEdit(svc)}
+                        className="text-sm px-4 py-2 bg-[#222] text-[#DBC07E] hover:bg-[#DBC07E] hover:text-black border border-[#333] rounded transition-all flex items-center gap-2"
+                      >
+                        <i className="fas fa-edit"></i> Edit
                       </button>
-                      <button onClick={() => deleteService(svc.id)} style={{ padding: '8px 16px', backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '500', transition: 'all 0.2s' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#ef4444'; e.currentTarget.style.color = '#fff'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)'; e.currentTarget.style.color = '#ef4444'; }}>
-                        Delete
+                      <button
+                        onClick={() => deleteService(svc.id)}
+                        className="text-sm px-4 py-2 bg-[#222] text-red-400 hover:bg-red-500 hover:text-white border border-[#333] rounded transition-all flex items-center gap-2"
+                      >
+                        <i className="fas fa-trash-alt"></i> Delete
                       </button>
                     </div>
                   </td>
@@ -95,8 +107,9 @@ export default function AdminServices() {
               ))}
               {services.length === 0 && (
                 <tr>
-                  <td colSpan={4} style={{ padding: '40px', textAlign: 'center', color: '#555', fontStyle: 'italic' }}>
-                    No services found.
+                  <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
+                    <i className="fas fa-inbox text-4xl mb-3 opacity-50 block"></i>
+                    No services found. Add a new service to get started.
                   </td>
                 </tr>
               )}
@@ -106,51 +119,48 @@ export default function AdminServices() {
       </div>
 
       {editing && (
-        <div style={{ marginTop: '40px', backgroundColor: '#111', padding: '40px', borderRadius: '16px', border: '1px solid #333', position: 'relative', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
-          <button onClick={() => setEditing(null)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'transparent', border: 'none', color: '#666', fontSize: '24px', cursor: 'pointer' }} onMouseEnter={(e) => e.currentTarget.style.color = '#fff'} onMouseLeave={(e) => e.currentTarget.style.color = '#666'}>
-            &times;
-          </button>
-          
-          <h3 style={{ fontSize: '22px', marginBottom: '30px', fontWeight: '300', color: '#DBC07E', borderBottom: '1px solid #222', paddingBottom: '15px' }}>
-            Edit Service
+        <div className="mt-8 p-6 bg-[#111] border border-[#DBC07E] rounded-lg shadow-2xl relative">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#DBC07E] to-transparent opacity-50"></div>
+          <h3 className="text-2xl mb-6 font-light tracking-wide" style={{ color: "#DBC07E" }}>
+            <i className="fas fa-edit mr-3"></i> Edit Service
           </h3>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '25px', marginBottom: '30px' }}>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label style={{ display: 'block', fontSize: '12px', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Title (EN)</label>
-              <input name="title_en" value={form.title_en || ""} onChange={handleChange} style={{ width: '100%', padding: '12px 15px', backgroundColor: '#0a0a0a', border: '1px solid #333', borderRadius: '8px', color: '#fff', fontSize: '15px', outline: 'none' }} onFocus={(e) => e.target.style.borderColor = '#DBC07E'} onBlur={(e) => e.target.style.borderColor = '#333'} />
-            </div>
-            <div>
-              <label style={{ display: 'block', fontSize: '12px', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', textAlign: 'right' }}>Title (AR)</label>
-              <input name="title_ar" value={form.title_ar || ""} onChange={handleChange} dir="rtl" style={{ width: '100%', padding: '12px 15px', backgroundColor: '#0a0a0a', border: '1px solid #333', borderRadius: '8px', color: '#fff', fontSize: '15px', textAlign: 'right', outline: 'none' }} onFocus={(e) => e.target.style.borderColor = '#DBC07E'} onBlur={(e) => e.target.style.borderColor = '#333'} />
-            </div>
-            <div style={{ gridColumn: '1 / -1' }}>
-              <label style={{ display: 'block', fontSize: '12px', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Description (EN)</label>
-              <textarea name="desc_en" value={form.desc_en || ""} onChange={handleChange} rows={3} style={{ width: '100%', padding: '12px 15px', backgroundColor: '#0a0a0a', border: '1px solid #333', borderRadius: '8px', color: '#fff', fontSize: '15px', outline: 'none', resize: 'vertical' }} onFocus={(e) => e.target.style.borderColor = '#DBC07E'} onBlur={(e) => e.target.style.borderColor = '#333'}></textarea>
-            </div>
-            <div style={{ gridColumn: '1 / -1' }}>
-              <label style={{ display: 'block', fontSize: '12px', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', textAlign: 'right' }}>Description (AR)</label>
-              <textarea name="desc_ar" value={form.desc_ar || ""} onChange={handleChange} rows={3} dir="rtl" style={{ width: '100%', padding: '12px 15px', backgroundColor: '#0a0a0a', border: '1px solid #333', borderRadius: '8px', color: '#fff', fontSize: '15px', textAlign: 'right', outline: 'none', resize: 'vertical' }} onFocus={(e) => e.target.style.borderColor = '#DBC07E'} onBlur={(e) => e.target.style.borderColor = '#333'}></textarea>
+              <label className="block mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">English Title</label>
+              <input name="title_en" value={form.title_en || ""} onChange={handleChange} className="w-full p-3 bg-[#0a0a0a] border border-[#333] rounded-md text-white focus:border-[#DBC07E] focus:ring-1 focus:ring-[#DBC07E] focus:outline-none transition-all" placeholder="e.g. Wedding Decor" />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: '12px', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Icon Class (FontAwesome)</label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <input name="icon" value={form.icon || ""} onChange={handleChange} placeholder="e.g. fas fa-star" style={{ flex: 1, padding: '12px 15px', backgroundColor: '#0a0a0a', border: '1px solid #333', borderRadius: '8px', color: '#fff', fontSize: '14px', fontFamily: 'monospace', outline: 'none' }} onFocus={(e) => e.target.style.borderColor = '#DBC07E'} onBlur={(e) => e.target.style.borderColor = '#333'} />
-                {form.icon && (
-                  <div style={{ width: '45px', height: '45px', backgroundColor: 'rgba(219, 192, 126, 0.1)', border: '1px solid rgba(219, 192, 126, 0.3)', borderRadius: '8px', color: '#DBC07E', fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <i className={form.icon}></i>
-                  </div>
-                )}
+              <label className="block mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">Arabic Title (العنوان بالعربية)</label>
+              <input name="title_ar" value={form.title_ar || ""} onChange={handleChange} className="w-full p-3 bg-[#0a0a0a] border border-[#333] rounded-md text-white focus:border-[#DBC07E] focus:ring-1 focus:ring-[#DBC07E] focus:outline-none transition-all text-right font-arabic" dir="rtl" placeholder="مثال: ديكور الزفاف" />
+            </div>
+
+            <div>
+              <label className="block mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">English Description</label>
+              <textarea name="desc_en" value={form.desc_en || ""} onChange={handleChange} rows={3} className="w-full p-3 bg-[#0a0a0a] border border-[#333] rounded-md text-white focus:border-[#DBC07E] focus:ring-1 focus:ring-[#DBC07E] focus:outline-none transition-all" placeholder="Short description..."></textarea>
+            </div>
+            <div>
+              <label className="block mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">Arabic Description (الوصف بالعربية)</label>
+              <textarea name="desc_ar" value={form.desc_ar || ""} onChange={handleChange} rows={3} className="w-full p-3 bg-[#0a0a0a] border border-[#333] rounded-md text-white focus:border-[#DBC07E] focus:ring-1 focus:ring-[#DBC07E] focus:outline-none transition-all text-right font-arabic" dir="rtl" placeholder="وصف قصير..."></textarea>
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Icon Class (FontAwesome)</label>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-md bg-[#0a0a0a] border border-[#333] flex items-center justify-center text-[#DBC07E] text-xl shrink-0">
+                  <i className={form.icon || "fas fa-star"}></i>
+                </div>
+                <input name="icon" value={form.icon || ""} onChange={handleChange} className="w-full p-3 bg-[#0a0a0a] border border-[#333] rounded-md text-white focus:border-[#DBC07E] focus:ring-1 focus:ring-[#DBC07E] focus:outline-none transition-all" placeholder="e.g. fas fa-ring" />
               </div>
             </div>
           </div>
-          
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '15px', paddingTop: '20px', borderTop: '1px solid #222' }}>
-            <button onClick={() => setEditing(null)} style={{ padding: '12px 24px', backgroundColor: 'transparent', color: '#fff', border: '1px solid #444', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', transition: 'all 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.borderColor = '#888'} onMouseLeave={(e) => e.currentTarget.style.borderColor = '#444'}>
+
+          <div className="mt-8 pt-6 border-t border-[#333] flex justify-end gap-4">
+            <button onClick={() => setEditing(null)} className="px-6 py-2.5 bg-transparent border border-[#555] text-gray-300 hover:bg-[#222] hover:text-white rounded-md font-medium transition-all">
               Cancel
             </button>
-            <button onClick={submitUpdate} style={{ padding: '12px 24px', backgroundColor: '#DBC07E', color: '#000', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: 'bold', transition: 'all 0.2s', boxShadow: '0 4px 15px rgba(219,192,126,0.3)' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c4a968'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#DBC07E'}>
-              Save Changes
+            <button onClick={submitUpdate} className="px-6 py-2.5 bg-[#DBC07E] text-black hover:bg-[#e8cd8f] rounded-md font-bold flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(219,192,126,0.3)]">
+              <i className="fas fa-check"></i> Save Changes
             </button>
           </div>
         </div>

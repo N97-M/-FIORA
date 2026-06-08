@@ -8,7 +8,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const body = await req.json()
-  
+
   const updateData = {
     // Website
     bg_website: body.bg_website,
@@ -55,7 +55,7 @@ export async function POST(req: Request) {
     accent_gold: body.accent_gold || '#DBC07E',
     bg_header: body.bg_header || 'transparent',
     text_header: body.text_header || '#000000',
-    text_header_mobile: body.text_header_mobile || '#000000',
+    text_header_mobile: body.text_header_mobile || body.text_header || '#000000',
     text_header_hover: body.text_header_hover || '#DBC07E',
     bg_footer: body.bg_footer || '#0a0a0a',
     text_footer: body.text_footer || '#ffffff',
