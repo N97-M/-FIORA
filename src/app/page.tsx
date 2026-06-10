@@ -25,18 +25,18 @@ type GalleryItemWithCategory = Prisma.GalleryItemGetPayload<{
 }>
 
 type HomePageData = [
-  Hero,
-  About,
-  Settings,
+  Hero | null,
+  About | null,
+  Settings | null,
   Service[],
   GalleryItemWithCategory[],
   Category[],
   BeforeAfter[],
   ProcessStep[],
   Testimonial[],
-  Navbar,
-  Theme,
-  Footer,
+  Navbar | null,
+  Theme | null,
+  Footer | null,
 ]
 
 export default async function HomePage() {
@@ -56,18 +56,18 @@ export default async function HomePage() {
         theme,
         footer,
     ]: HomePageData = await prisma.$transaction([
-        prisma.hero.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } }),
-        prisma.about.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } }),
-        prisma.settings.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } }),
+        prisma.hero.findFirst(),
+        prisma.about.findFirst(),
+        prisma.settings.findFirst(),
         prisma.service.findMany({ where: { isVisible: true }, orderBy: { order: 'asc' } }),
         prisma.galleryItem.findMany({ include: { category: true }, where: { isVisible: true }, orderBy: { order: 'asc' } }),
         prisma.category.findMany({ orderBy: { order: 'asc' } }),
         prisma.beforeAfter.findMany({ where: { isVisible: true }, orderBy: { order: 'asc' } }),
         prisma.processStep.findMany({ where: { isVisible: true }, orderBy: { step_number: 'asc' } }),
         prisma.testimonial.findMany({ where: { isVisible: true } }),
-        prisma.navbar.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } }),
-        prisma.theme.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } }),
-        prisma.footer.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } }),
+        prisma.navbar.findFirst(),
+        prisma.theme.findFirst(),
+        prisma.footer.findFirst(),
     ])
   
   const featuredProjects = galleryRaw.filter(item => item.isFeatured)
