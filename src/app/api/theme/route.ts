@@ -8,7 +8,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const body = await req.json()
-
+  
   const updateData = {
     // Website
     bg_website: body.bg_website,

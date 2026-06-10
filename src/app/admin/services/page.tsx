@@ -89,14 +89,14 @@ export default function AdminServices() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex justify-end gap-3">
-                      <button
-                        onClick={() => startEdit(svc)}
+                      <button 
+                        onClick={() => startEdit(svc)} 
                         className="text-sm px-4 py-2 bg-[#222] text-[#DBC07E] hover:bg-[#DBC07E] hover:text-black border border-[#333] rounded transition-all flex items-center gap-2"
                       >
                         <i className="fas fa-edit"></i> Edit
                       </button>
-                      <button
-                        onClick={() => deleteService(svc.id)}
+                      <button 
+                        onClick={() => deleteService(svc.id)} 
                         className="text-sm px-4 py-2 bg-[#222] text-red-400 hover:bg-red-500 hover:text-white border border-[#333] rounded transition-all flex items-center gap-2"
                       >
                         <i className="fas fa-trash-alt"></i> Delete
@@ -124,7 +124,7 @@ export default function AdminServices() {
           <h3 className="text-2xl mb-6 font-light tracking-wide" style={{ color: "#DBC07E" }}>
             <i className="fas fa-edit mr-3"></i> Edit Service
           </h3>
-
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">English Title</label>
@@ -134,7 +134,7 @@ export default function AdminServices() {
               <label className="block mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">Arabic Title (العنوان بالعربية)</label>
               <input name="title_ar" value={form.title_ar || ""} onChange={handleChange} className="w-full p-3 bg-[#0a0a0a] border border-[#333] rounded-md text-white focus:border-[#DBC07E] focus:ring-1 focus:ring-[#DBC07E] focus:outline-none transition-all text-right font-arabic" dir="rtl" placeholder="مثال: ديكور الزفاف" />
             </div>
-
+            
             <div>
               <label className="block mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">English Description</label>
               <textarea name="desc_en" value={form.desc_en || ""} onChange={handleChange} rows={3} className="w-full p-3 bg-[#0a0a0a] border border-[#333] rounded-md text-white focus:border-[#DBC07E] focus:ring-1 focus:ring-[#DBC07E] focus:outline-none transition-all" placeholder="Short description..."></textarea>
@@ -143,7 +143,7 @@ export default function AdminServices() {
               <label className="block mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">Arabic Description (الوصف بالعربية)</label>
               <textarea name="desc_ar" value={form.desc_ar || ""} onChange={handleChange} rows={3} className="w-full p-3 bg-[#0a0a0a] border border-[#333] rounded-md text-white focus:border-[#DBC07E] focus:ring-1 focus:ring-[#DBC07E] focus:outline-none transition-all text-right font-arabic" dir="rtl" placeholder="وصف قصير..."></textarea>
             </div>
-
+            
             <div className="md:col-span-2">
               <label className="block mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Icon Class (FontAwesome)</label>
               <div className="flex items-center gap-4">
@@ -154,7 +154,7 @@ export default function AdminServices() {
               </div>
             </div>
           </div>
-
+          
           <div className="mt-8 pt-6 border-t border-[#333] flex justify-end gap-4">
             <button onClick={() => setEditing(null)} className="px-6 py-2.5 bg-transparent border border-[#555] text-gray-300 hover:bg-[#222] hover:text-white rounded-md font-medium transition-all">
               Cancel

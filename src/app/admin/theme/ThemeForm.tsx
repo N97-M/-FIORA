@@ -14,27 +14,27 @@ export default function ThemeForm({ initialTheme }: { initialTheme: any }) {
     text_primary: initialTheme?.text_primary || '#000000',
     text_secondary: initialTheme?.text_secondary || '#555555',
     accent_gold: initialTheme?.accent_gold || '#DBC07E',
-
+    
     // Header
     bg_header: initialTheme?.bg_header || 'transparent',
     text_header: initialTheme?.text_header || '#000000',
     text_header_mobile: initialTheme?.text_header_mobile || initialTheme?.text_header || '#000000',
     text_header_hover: initialTheme?.text_header_hover || '#DBC07E',
-
+    
     // Footer
     bg_footer: initialTheme?.bg_footer || '#0a0a0a',
     text_footer: initialTheme?.text_footer || '#ffffff',
     link_footer: initialTheme?.link_footer || 'rgba(255,255,255,0.7)',
     accent_footer: initialTheme?.accent_footer || '#DBC07E',
-
+    
     // Cards
     bg_card: initialTheme?.bg_card || '#FDFBF7',
     text_card: initialTheme?.text_card || '#000000',
-
+    
     // Badges
     bg_badge: initialTheme?.bg_badge || '#222222',
     text_badge: initialTheme?.text_badge || '#DBC07E',
-
+    
     // Buttons
     bg_button: initialTheme?.bg_button || '#000000',
     text_button: initialTheme?.text_button || '#ffffff',
@@ -48,7 +48,7 @@ export default function ThemeForm({ initialTheme }: { initialTheme: any }) {
     e.preventDefault()
     setLoading(true)
     setMessage('')
-
+    
     try {
       const res = await fetch('/api/theme', {
         method: 'POST',
@@ -85,19 +85,19 @@ export default function ThemeForm({ initialTheme }: { initialTheme: any }) {
     <div style={{ display: 'grid', gap: '8px' }}>
       <label style={{ color: '#aaa', fontSize: '13px' }}>{label}</label>
       <div style={{ display: 'flex', gap: '10px' }}>
-        <input
-          type={form[name].startsWith('rgba') || form[name] === 'transparent' ? 'text' : 'color'}
-          name={name}
-          value={form[name]}
-          onChange={handleChange}
-          style={{ height: '45px', width: '60px', padding: 0, border: 'none', background: 'transparent' }}
+        <input 
+          type={form[name].startsWith('rgba') || form[name] === 'transparent' ? 'text' : 'color'} 
+          name={name} 
+          value={form[name]} 
+          onChange={handleChange} 
+          style={{ height: '45px', width: '60px', padding: 0, border: 'none', background: 'transparent' }} 
         />
-        <input
-          type="text"
-          name={name}
-          value={form[name]}
-          onChange={handleChange}
-          style={inputStyle}
+        <input 
+          type="text" 
+          name={name} 
+          value={form[name]} 
+          onChange={handleChange} 
+          style={inputStyle} 
         />
       </div>
     </div>
@@ -125,7 +125,7 @@ export default function ThemeForm({ initialTheme }: { initialTheme: any }) {
       )}
 
       <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '30px' }}>
-
+        
         <Section title="Global Colors">
           <ColorInput label="Website Background" name="bg_website" />
           <ColorInput label="Primary Text Color" name="text_primary" />
@@ -159,19 +159,19 @@ export default function ThemeForm({ initialTheme }: { initialTheme: any }) {
           <ColorInput label="Badge Text Color" name="text_badge" />
         </Section>
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
+        <button 
+          type="submit" 
+          disabled={loading} 
+          style={{ 
             justifySelf: 'start',
-            padding: '15px 50px',
-            background: loading ? '#666' : '#DBC07E',
-            color: '#000',
-            border: 'none',
-            borderRadius: '8px',
-            fontWeight: 'bold',
+            padding: '15px 50px', 
+            background: loading ? '#666' : '#DBC07E', 
+            color: '#000', 
+            border: 'none', 
+            borderRadius: '8px', 
+            fontWeight: 'bold', 
             fontSize: '16px',
-            cursor: loading ? 'not-allowed' : 'pointer'
+            cursor: loading ? 'not-allowed' : 'pointer' 
           }}
         >
           {loading ? 'Saving...' : 'Save Theme Configuration'}
