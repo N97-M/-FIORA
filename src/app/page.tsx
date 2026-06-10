@@ -55,7 +55,7 @@ export default async function HomePage() {
         navbar,
         theme,
         footer,
-    ]: HomePageData = await Promise.all([
+    ]: HomePageData = await prisma.$transaction([
         prisma.hero.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } }),
         prisma.about.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } }),
         prisma.settings.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } }),
