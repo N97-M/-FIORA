@@ -1,36 +1,40 @@
 import { prisma } from '@/lib/prisma'
+import { connection } from 'next/server'
 import Script from 'next/script'
-import Image from 'next/image'
 import ReviewForm from '@/components/ReviewForm'
 
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-    // Fetch data from database, but keep the page alive if Supabase/Prisma is unavailable.
-    let hero: any = {}
-    let about: any = {}
-    let settings: any = {}
-    let services: any[] = []
-    let galleryRaw: any[] = []
-    let categories: any[] = []
-    let beforeAfters: any[] = []
-    let processSteps: any[] = []
-    let testimonials: any[] = []
+    await connection()
 
-    try {
-        hero = await prisma.hero.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } })
-        about = await prisma.about.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } })
-        settings = await prisma.settings.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } })
-
-        services = await prisma.service.findMany({ where: { isVisible: true }, orderBy: { order: 'asc' } })
-        galleryRaw = await prisma.galleryItem.findMany({ include: { category: true }, where: { isVisible: true }, orderBy: { order: 'asc' } })
-        categories = await prisma.category.findMany({ orderBy: { order: 'asc' } })
-        beforeAfters = await prisma.beforeAfter.findMany({ where: { isVisible: true }, orderBy: { order: 'asc' } })
-        processSteps = await prisma.processStep.findMany({ where: { isVisible: true }, orderBy: { step_number: 'asc' } })
-        testimonials = await prisma.testimonial.findMany({ where: { isVisible: true } })
-    } catch (error) {
-        console.error('Home page data load failed, using fallback content:', error)
-    }
+    const [
+        hero,
+        about,
+        settings,
+        services,
+        galleryRaw,
+        categories,
+        beforeAfters,
+        processSteps,
+        testimonials,
+        navbar,
+        theme,
+        footer,
+    ] = await Promise.all([
+        prisma.hero.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } }),
+        prisma.about.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } }),
+        prisma.settings.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } }),
+        prisma.service.findMany({ where: { isVisible: true }, orderBy: { order: 'asc' } }),
+        prisma.galleryItem.findMany({ include: { category: true }, where: { isVisible: true }, orderBy: { order: 'asc' } }),
+        prisma.category.findMany({ orderBy: { order: 'asc' } }),
+        prisma.beforeAfter.findMany({ where: { isVisible: true }, orderBy: { order: 'asc' } }),
+        prisma.processStep.findMany({ where: { isVisible: true }, orderBy: { step_number: 'asc' } }),
+        prisma.testimonial.findMany({ where: { isVisible: true } }),
+        prisma.navbar.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } }),
+        prisma.theme.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } }),
+        prisma.footer.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } }),
+    ])
   
   const featuredProjects = galleryRaw.filter(item => item.isFeatured)
 
@@ -57,32 +61,6 @@ export default async function HomePage() {
     })
   }
   
-    let navbar: any = {}
-    let theme: any = {}
-    let footer: any = {}
-
-    try {
-        navbar = await prisma.navbar.upsert({
-            where: { id: 1 },
-            update: {},
-            create: { id: 1 }
-        })
-
-        theme = await prisma.theme.upsert({
-            where: { id: 1 },
-            update: {},
-            create: { id: 1 }
-        })
-
-        footer = await prisma.footer.upsert({
-            where: { id: 1 },
-            update: {},
-            create: { id: 1 }
-        })
-    } catch (error) {
-        console.error('Home page settings load failed, using fallback content:', error)
-    }
-
   return (
     <main className="light-theme">
       <style dangerouslySetInnerHTML={{__html: `
