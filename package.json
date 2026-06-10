@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "npx cross-env PRISMA_CLIENT_ENGINE_TYPE=binary prisma generate && next build",
+    "vercel-build": "npx cross-env PRISMA_CLIENT_ENGINE_TYPE=binary prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "lint": "eslint",
     "postinstall": "npx cross-env PRISMA_CLIENT_ENGINE_TYPE=binary prisma generate"

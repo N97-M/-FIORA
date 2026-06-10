@@ -1,9 +1,43 @@
+/* eslint-disable react/no-unescaped-entities */
 import { prisma } from '@/lib/prisma'
+import type {
+  About,
+  BeforeAfter,
+  Category,
+  Footer,
+  Hero,
+  Navbar,
+  Prisma,
+  ProcessStep,
+  Service,
+  Settings,
+  Testimonial,
+  Theme,
+} from '@prisma/client'
 import { connection } from 'next/server'
 import Script from 'next/script'
 import ReviewForm from '@/components/ReviewForm'
 
 export const dynamic = 'force-dynamic';
+
+type GalleryItemWithCategory = Prisma.GalleryItemGetPayload<{
+  include: { category: true }
+}>
+
+type HomePageData = [
+  Hero,
+  About,
+  Settings,
+  Service[],
+  GalleryItemWithCategory[],
+  Category[],
+  BeforeAfter[],
+  ProcessStep[],
+  Testimonial[],
+  Navbar,
+  Theme,
+  Footer,
+]
 
 export default async function HomePage() {
     await connection()
@@ -21,7 +55,7 @@ export default async function HomePage() {
         navbar,
         theme,
         footer,
-    ] = await Promise.all([
+    ]: HomePageData = await Promise.all([
         prisma.hero.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } }),
         prisma.about.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } }),
         prisma.settings.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } }),
@@ -39,14 +73,14 @@ export default async function HomePage() {
   const featuredProjects = galleryRaw.filter(item => item.isFeatured)
 
   // Group by category and interleave (round-robin style) to mix categories in "All" view
-  const groups: { [key: string]: any[] } = {}
+  const groups: Record<string, GalleryItemWithCategory[]> = {}
   galleryRaw.forEach(item => {
     const catId = item.categoryId || 'other'
     if (!groups[catId]) groups[catId] = []
     groups[catId].push(item)
   })
 
-  const gallery: any[] = []
+  const gallery: GalleryItemWithCategory[] = []
   const groupKeys = Object.keys(groups)
   let maxLen = 0
   groupKeys.forEach(k => {
@@ -260,7 +294,7 @@ export default async function HomePage() {
               </div>
               
               <div className="services-modern-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px', marginTop: '50px' }}>
-                  {services.map((service: any, index: number) => (
+                  {services.map((service) => (
                     <div key={service.id} className="service-modern-card" style={{ padding: '40px', background: 'var(--bg-card)', border: '1px solid rgba(0,0,0,0.05)', borderRadius: '0px', transition: 'all 0.3s ease', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
                         <i className={service.icon} style={{ fontSize: '32px', color: 'var(--primary-gold)', marginBottom: '20px', display: 'block' }}></i>
                         <h3 style={{ fontSize: '20px', color: 'var(--text-card)', marginBottom: '15px', fontFamily: 'var(--font-h1)' }}>
@@ -358,7 +392,7 @@ export default async function HomePage() {
               
               <div className="gallery-filters">
                   <button className="filter-btn active" data-filter="all" data-i18n="filter_all" style={{ borderColor: 'var(--bg-badge)', color: 'var(--bg-badge)' }}>الكل / All</button>
-                  {categories.map((cat: any) => (
+                  {categories.map((cat) => (
                     <button key={cat.id} className="filter-btn" data-filter={cat.id} style={{ borderColor: 'var(--bg-badge)', color: 'var(--bg-badge)' }}>
                         <span className="ar-text">{cat.name_ar}</span>
                         <span className="en-text">{cat.name_en}</span>
@@ -367,7 +401,7 @@ export default async function HomePage() {
               </div>
 
               <div className="gallery-grid" id="galleryGrid">
-                  {gallery.map((item: any) => {
+                  {gallery.map((item) => {
                     const hasTitle = Boolean(item.title_ar || item.title_en);
                     const hasDesc = Boolean(item.desc_ar || item.desc_en);
                     
@@ -409,7 +443,7 @@ export default async function HomePage() {
                   </h2>
               </div>
               <div className="process-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '30px', textAlign: 'center' }}>
-                  {processSteps.map((step, index) => (
+                  {processSteps.map((step) => (
                       <div key={step.id} style={{ padding: '30px 20px', position: 'relative' }}>
                           <div style={{ fontSize: '60px', color: 'rgba(212, 175, 55, 0.2)', fontFamily: 'var(--font-h1)', fontWeight: 'bold', marginBottom: '10px' }}>0{step.step_number}</div>
                           <h4 style={{ color: 'var(--dark-black)', fontFamily: 'var(--font-h1)', fontSize: '22px', marginBottom: '15px' }}>
@@ -453,8 +487,8 @@ export default async function HomePage() {
                                   {"★".repeat(t.rating)}{"☆".repeat(5-t.rating)}
                               </div>
                               <p style={{ fontSize: '16px', color: 'var(--text-card)', opacity: 0.9, fontStyle: 'italic', marginBottom: '20px', lineHeight: '1.8' }}>
-                                  <span className="en-text">"{t.content_en}"</span>
-                                  <span className="ar-text">"{t.content_ar}"</span>
+                                  <span className="en-text">&quot;{t.content_en}&quot;</span>
+                                  <span className="ar-text">&quot;{t.content_ar}&quot;</span>
                               </p>
                               <h4 style={{ fontFamily: 'var(--font-h1)', fontSize: '18px', color: 'var(--text-card)' }}>
                                   <span className="en-text">- {t.client_name_en}</span>
@@ -474,7 +508,7 @@ export default async function HomePage() {
               <div className="contact-minimal reveal" style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
                   <h2 style={{ fontFamily: 'var(--font-h1)', fontSize: '42px', color: 'var(--dark-black)', marginBottom: '20px' }}>
                       <span className="ar-text">جاهز لتحويل مساحتك؟<br/>دعنا نصنع شيئاً جميلاً معاً.</span>
-                      <span className="en-text">Ready to transform your space?<br/>Let's create something beautiful together.</span>
+                      <span className="en-text">Ready to transform your space?<br/>Let&apos;s create something beautiful together.</span>
                   </h2>
                   
                   <div style={{ marginTop: '40px', marginBottom: '50px' }}>
@@ -577,7 +611,7 @@ export default async function HomePage() {
       {/* Luxury Lightbox */}
       <div id="lightbox" className="lightbox">
           <span className="lightbox-close">&times;</span>
-          <img className="lightbox-content" id="lightbox-img" />
+          <img className="lightbox-content" id="lightbox-img" alt="" />
           <div id="lightbox-caption"></div>
       </div>
 
