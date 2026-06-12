@@ -145,7 +145,7 @@ model Settings {
   phone_number     String   @default("249123456789")
   tiktok_url       String   @default("#")
   instagram_url    String   @default("#")
-  snapchat_url     String   @default("#")
+  location_url     String   @default("https://maps.google.com")
   status           String   @default("AVAILABLE") // AVAILABLE, BUSY, CLOSED
   services_center_image String?
   updatedAt        DateTime @updatedAt

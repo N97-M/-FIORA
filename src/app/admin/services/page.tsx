@@ -18,9 +18,19 @@ export default function AdminServices() {
   const [form, setForm] = useState<Partial<Service>>({});
 
   const fetchServices = async () => {
-    const res = await fetch("/api/services", { cache: "no-store" });
-    const data = await res.json();
-    setServices(data);
+    try {
+      const res = await fetch("/api/services", { cache: "no-store" });
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setServices(data);
+      } else {
+        console.error("API returned non-array:", data);
+        setServices([]);
+      }
+    } catch (err) {
+      console.error("Failed to fetch services:", err);
+      setServices([]);
+    }
   };
 
   useEffect(() => {
@@ -36,13 +46,27 @@ export default function AdminServices() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const startAdd = () => {
+    setEditing({ id: 'new', title_en: '', title_ar: '' });
+    setForm({ title_en: '', title_ar: '', desc_en: '', desc_ar: '', icon: 'fas fa-star', isVisible: true });
+  };
+
   const submitUpdate = async () => {
-    if (!editing?.id) return;
-    await fetch("/api/services", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: editing.id, ...form }),
-    });
+    if (!editing) return;
+    
+    if (editing.id === 'new') {
+      await fetch("/api/services", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+    } else {
+      await fetch("/api/services", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editing.id, ...form }),
+      });
+    }
     setEditing(null);
     fetchServices();
   };
@@ -53,113 +77,160 @@ export default function AdminServices() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-light tracking-wide" style={{ color: "#DBC07E" }}>
+    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', flexWrap: 'wrap', gap: '15px' }}>
+        <h2 style={{ fontSize: '28px', fontWeight: '300', color: '#DBC07E', margin: 0, fontFamily: 'var(--font-h2)' }}>
           Manage Services
         </h2>
+        <button 
+          onClick={startAdd}
+          className="btn btn-primary"
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', fontSize: '12px' }}
+        >
+          <i className="fas fa-plus"></i> Add New Service
+        </button>
       </div>
 
-      <div className="bg-[#111] border border-[#222] rounded-lg overflow-hidden shadow-lg">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left whitespace-nowrap">
-            <thead>
-              <tr className="border-b border-[#333] bg-[#0a0a0a]">
-                <th className="px-6 py-4 text-sm font-medium text-[#DBC07E] uppercase tracking-wider text-center w-16">Icon</th>
-                <th className="px-6 py-4 text-sm font-medium text-[#DBC07E] uppercase tracking-wider">English Title</th>
-                <th className="px-6 py-4 text-sm font-medium text-[#DBC07E] uppercase tracking-wider text-right" dir="rtl">Arabic Title (العنوان)</th>
-                <th className="px-6 py-4 text-sm font-medium text-[#DBC07E] uppercase tracking-wider text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#222]">
-              {services.map((svc) => (
-                <tr key={svc.id} className="hover:bg-[#1a1a1a] transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="w-10 h-10 mx-auto rounded bg-[#222] text-[#DBC07E] flex items-center justify-center border border-[#333]">
-                      <i className={svc.icon || "fas fa-star"}></i>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="text-white font-medium text-lg">{svc.title_en}</div>
-                    {svc.desc_en && <div className="text-gray-400 text-sm truncate max-w-xs mt-1">{svc.desc_en}</div>}
-                  </td>
-                  <td className="px-6 py-4 text-right" dir="rtl">
-                    <div className="text-white font-medium text-lg font-arabic">{svc.title_ar}</div>
-                    {svc.desc_ar && <div className="text-gray-400 text-sm truncate max-w-xs mt-1 font-arabic">{svc.desc_ar}</div>}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex justify-end gap-3">
-                      <button 
-                        onClick={() => startEdit(svc)} 
-                        className="text-sm px-4 py-2 bg-[#222] text-[#DBC07E] hover:bg-[#DBC07E] hover:text-black border border-[#333] rounded transition-all flex items-center gap-2"
-                      >
-                        <i className="fas fa-edit"></i> Edit
-                      </button>
-                      <button 
-                        onClick={() => deleteService(svc.id)} 
-                        className="text-sm px-4 py-2 bg-[#222] text-red-400 hover:bg-red-500 hover:text-white border border-[#333] rounded transition-all flex items-center gap-2"
-                      >
-                        <i className="fas fa-trash-alt"></i> Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {services.length === 0 && (
-                <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
-                    <i className="fas fa-inbox text-4xl mb-3 opacity-50 block"></i>
-                    No services found. Add a new service to get started.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
+        gap: '25px' 
+      }}>
+        {services.map((svc) => (
+          <div key={svc.id} style={{
+            background: 'rgba(255, 255, 255, 0.02)',
+            border: '1px solid rgba(219, 192, 126, 0.1)',
+            borderRadius: '12px',
+            padding: '25px',
+            display: 'flex',
+            flexDirection: 'column',
+            transition: 'all 0.3s ease',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+            position: 'relative'
+          }}
+          onMouseEnter={(e) => {
+             e.currentTarget.style.borderColor = 'rgba(219, 192, 126, 0.5)';
+             e.currentTarget.style.transform = 'translateY(-5px)';
+          }}
+          onMouseLeave={(e) => {
+             e.currentTarget.style.borderColor = 'rgba(219, 192, 126, 0.1)';
+             e.currentTarget.style.transform = 'none';
+          }}
+          >
+            <div style={{
+              width: '50px', height: '50px',
+              background: 'rgba(0,0,0,0.5)',
+              border: '1px solid rgba(219, 192, 126, 0.2)',
+              borderRadius: '8px',
+              display: 'flex', justifyContent: 'center', alignItems: 'center',
+              color: '#DBC07E', fontSize: '20px', marginBottom: '20px'
+            }}>
+              <i className={svc.icon || "fas fa-star"}></i>
+            </div>
+            
+            <h3 style={{ fontSize: '18px', color: '#fff', marginBottom: '5px', fontWeight: '500' }}>{svc.title_en}</h3>
+            <h3 style={{ fontSize: '16px', color: '#DBC07E', marginBottom: '15px', fontFamily: 'var(--font-arabic)', textAlign: 'right' }} dir="rtl">{svc.title_ar}</h3>
+            
+            <div style={{ flexGrow: 1 }}>
+              {svc.desc_en && <p style={{ color: '#888', fontSize: '13px', marginBottom: '10px', lineHeight: '1.5' }}>{svc.desc_en}</p>}
+              {svc.desc_ar && <p style={{ color: '#888', fontSize: '13px', marginBottom: '20px', lineHeight: '1.5', fontFamily: 'var(--font-arabic)', textAlign: 'right' }} dir="rtl">{svc.desc_ar}</p>}
+            </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: 'auto', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+              <button 
+                onClick={() => startEdit(svc)} 
+                style={{
+                  background: 'rgba(219, 192, 126, 0.1)',
+                  color: '#DBC07E',
+                  border: '1px solid rgba(219, 192, 126, 0.3)',
+                  padding: '6px 15px',
+                  borderRadius: '4px',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: '5px',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#DBC07E'; e.currentTarget.style.color = '#000'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(219, 192, 126, 0.1)'; e.currentTarget.style.color = '#DBC07E'; }}
+              >
+                <i className="fas fa-edit"></i> Edit
+              </button>
+              <button 
+                onClick={() => deleteService(svc.id)} 
+                style={{
+                  background: 'rgba(255, 68, 68, 0.1)',
+                  color: '#ff4444',
+                  border: '1px solid rgba(255, 68, 68, 0.3)',
+                  padding: '6px 15px',
+                  borderRadius: '4px',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: '5px',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#ff4444'; e.currentTarget.style.color = '#fff'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255, 68, 68, 0.1)'; e.currentTarget.style.color = '#ff4444'; }}
+              >
+                <i className="fas fa-trash-alt"></i> Delete
+              </button>
+            </div>
+          </div>
+        ))}
+        {services.length === 0 && (
+          <div style={{ gridColumn: '1 / -1', padding: '50px', textAlign: 'center', color: '#666', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px dashed rgba(255,255,255,0.1)' }}>
+            <i className="fas fa-inbox" style={{ fontSize: '40px', marginBottom: '15px', opacity: 0.5 }}></i>
+            <p>No services found. Add a new service to get started.</p>
+          </div>
+        )}
       </div>
 
       {editing && (
-        <div className="mt-8 p-6 bg-[#111] border border-[#DBC07E] rounded-lg shadow-2xl relative">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#DBC07E] to-transparent opacity-50"></div>
-          <h3 className="text-2xl mb-6 font-light tracking-wide" style={{ color: "#DBC07E" }}>
-            <i className="fas fa-edit mr-3"></i> Edit Service
+        <div style={{
+          marginTop: '40px', padding: '30px', background: 'rgba(10, 10, 10, 0.8)',
+          border: '1px solid #DBC07E', borderRadius: '12px', boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
+          position: 'relative', overflow: 'hidden'
+        }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '3px', background: 'linear-gradient(90deg, transparent, #DBC07E, transparent)', opacity: 0.5 }}></div>
+          
+          <h3 style={{ fontSize: '22px', marginBottom: '25px', color: '#DBC07E', fontWeight: '300' }}>
+            <i className="fas fa-edit" style={{ marginRight: '10px' }}></i> Edit Service
           </h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
             <div>
-              <label className="block mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">English Title</label>
-              <input name="title_en" value={form.title_en || ""} onChange={handleChange} className="w-full p-3 bg-[#0a0a0a] border border-[#333] rounded-md text-white focus:border-[#DBC07E] focus:ring-1 focus:ring-[#DBC07E] focus:outline-none transition-all" placeholder="e.g. Wedding Decor" />
+              <label style={{ display: 'block', fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>English Title</label>
+              <input name="title_en" value={form.title_en || ""} onChange={handleChange} style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '6px', outline: 'none' }} placeholder="e.g. Wedding Decor" />
             </div>
             <div>
-              <label className="block mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">Arabic Title (العنوان بالعربية)</label>
-              <input name="title_ar" value={form.title_ar || ""} onChange={handleChange} className="w-full p-3 bg-[#0a0a0a] border border-[#333] rounded-md text-white focus:border-[#DBC07E] focus:ring-1 focus:ring-[#DBC07E] focus:outline-none transition-all text-right font-arabic" dir="rtl" placeholder="مثال: ديكور الزفاف" />
-            </div>
-            
-            <div>
-              <label className="block mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">English Description</label>
-              <textarea name="desc_en" value={form.desc_en || ""} onChange={handleChange} rows={3} className="w-full p-3 bg-[#0a0a0a] border border-[#333] rounded-md text-white focus:border-[#DBC07E] focus:ring-1 focus:ring-[#DBC07E] focus:outline-none transition-all" placeholder="Short description..."></textarea>
-            </div>
-            <div>
-              <label className="block mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">Arabic Description (الوصف بالعربية)</label>
-              <textarea name="desc_ar" value={form.desc_ar || ""} onChange={handleChange} rows={3} className="w-full p-3 bg-[#0a0a0a] border border-[#333] rounded-md text-white focus:border-[#DBC07E] focus:ring-1 focus:ring-[#DBC07E] focus:outline-none transition-all text-right font-arabic" dir="rtl" placeholder="وصف قصير..."></textarea>
+              <label style={{ display: 'block', fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', textAlign: 'right' }}>Arabic Title (العنوان بالعربية)</label>
+              <input name="title_ar" value={form.title_ar || ""} onChange={handleChange} style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '6px', outline: 'none', textAlign: 'right', fontFamily: 'var(--font-arabic)' }} dir="rtl" placeholder="مثال: ديكور الزفاف" />
             </div>
             
-            <div className="md:col-span-2">
-              <label className="block mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Icon Class (FontAwesome)</label>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-md bg-[#0a0a0a] border border-[#333] flex items-center justify-center text-[#DBC07E] text-xl shrink-0">
+            <div>
+              <label style={{ display: 'block', fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>English Description</label>
+              <textarea name="desc_en" value={form.desc_en || ""} onChange={handleChange} rows={3} style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '6px', outline: 'none', resize: 'vertical' }} placeholder="Short description..."></textarea>
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', textAlign: 'right' }}>Arabic Description (الوصف بالعربية)</label>
+              <textarea name="desc_ar" value={form.desc_ar || ""} onChange={handleChange} rows={3} style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '6px', outline: 'none', textAlign: 'right', fontFamily: 'var(--font-arabic)', resize: 'vertical' }} dir="rtl" placeholder="وصف قصير..."></textarea>
+            </div>
+            
+            <div style={{ gridColumn: '1 / -1' }}>
+              <label style={{ display: 'block', fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Icon Class (FontAwesome)</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <div style={{ width: '45px', height: '45px', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#DBC07E', fontSize: '18px', flexShrink: 0 }}>
                   <i className={form.icon || "fas fa-star"}></i>
                 </div>
-                <input name="icon" value={form.icon || ""} onChange={handleChange} className="w-full p-3 bg-[#0a0a0a] border border-[#333] rounded-md text-white focus:border-[#DBC07E] focus:ring-1 focus:ring-[#DBC07E] focus:outline-none transition-all" placeholder="e.g. fas fa-ring" />
+                <input name="icon" value={form.icon || ""} onChange={handleChange} style={{ flexGrow: 1, padding: '12px', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '6px', outline: 'none' }} placeholder="e.g. fas fa-ring" />
               </div>
             </div>
           </div>
           
-          <div className="mt-8 pt-6 border-t border-[#333] flex justify-end gap-4">
-            <button onClick={() => setEditing(null)} className="px-6 py-2.5 bg-transparent border border-[#555] text-gray-300 hover:bg-[#222] hover:text-white rounded-md font-medium transition-all">
+          <div style={{ marginTop: '30px', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'flex-end', gap: '15px' }}>
+            <button onClick={() => setEditing(null)} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#ccc', padding: '10px 25px', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>
               Cancel
             </button>
-            <button onClick={submitUpdate} className="px-6 py-2.5 bg-[#DBC07E] text-black hover:bg-[#e8cd8f] rounded-md font-bold flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(219,192,126,0.3)]">
+            <button onClick={submitUpdate} className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 25px', fontSize: '13px', borderRadius: '4px', border: 'none', cursor: 'pointer' }}>
               <i className="fas fa-check"></i> Save Changes
             </button>
           </div>

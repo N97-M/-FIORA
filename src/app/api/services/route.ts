@@ -6,7 +6,6 @@ export async function GET(request: NextRequest) {
   try {
     const services = await prisma.service.findMany({
       orderBy: { order: 'asc' },
-      where: { isVisible: true },
     })
     return NextResponse.json(services)
   } catch (err: any) {
@@ -28,6 +27,29 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json(service)
   } catch (err: any) {
     console.error('Failed to update Service:', err)
+    return NextResponse.json({ error: err.message }, { status: 500 })
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const data = await request.json()
+    const service = await prisma.service.create({
+      data: {
+        title_en: data.title_en || 'New Service',
+        title_ar: data.title_ar || 'خدمة جديدة',
+        desc_en: data.desc_en || '',
+        desc_ar: data.desc_ar || '',
+        icon: data.icon || 'fas fa-star',
+        isVisible: true,
+        order: 0,
+      },
+    })
+    revalidatePath('/admin/services')
+    revalidatePath('/')
+    return NextResponse.json(service)
+  } catch (err: any) {
+    console.error('Failed to create Service:', err)
     return NextResponse.json({ error: err.message }, { status: 500 })
   }
 }

@@ -17,6 +17,7 @@ import type {
 import { connection } from 'next/server'
 import Script from 'next/script'
 import ReviewForm from '@/components/ReviewForm'
+import MaintenanceScreen from '@/components/MaintenanceScreen'
 
 export const dynamic = 'force-dynamic';
 
@@ -132,9 +133,8 @@ export default async function HomePage() {
         phone_number: "249123456789",
         tiktok_url: "#",
         instagram_url: "#",
-        snapchat_url: "#",
+        location_url: "https://maps.google.com",
         status: "AVAILABLE",
-        services_center_image: null,
         updatedAt: new Date(),
     }
 
@@ -192,6 +192,10 @@ export default async function HomePage() {
         updatedAt: new Date(),
     }
   
+  if (settings.status === 'CLOSED') {
+    return <MaintenanceScreen theme={theme} />
+  }
+
   const featuredProjects = galleryRaw.filter(item => item.isFeatured)
 
   // Group by category and interleave (round-robin style) to mix categories in "All" view
@@ -645,13 +649,21 @@ export default async function HomePage() {
                           <div className="icon-inner wa"><i className="fab fa-whatsapp"></i></div>
                       </a>
                       
-                      <a href="https://maps.google.com" target="_blank" className="contact-icon-item" title="Location" style={{ color: 'var(--dark-black)', borderColor: 'rgba(0,0,0,0.1)' }}>
-                                  <div className="icon-inner lc"><i className="fas fa-map-marker-alt"></i></div>
-                      </a>
+                      {settings?.location_url && (
+                        <a href={settings.location_url} target="_blank" className="contact-icon-item" title="Location" style={{ color: 'var(--dark-black)', borderColor: 'rgba(0,0,0,0.1)' }}>
+                            <div className="icon-inner lc"><i className="fas fa-map-marker-alt"></i></div>
+                        </a>
+                      )}
                       
                       {settings?.tiktok_url && (
                         <a href={settings.tiktok_url} target="_blank" className="contact-icon-item" title="TikTok" style={{ color: 'var(--dark-black)', borderColor: 'rgba(0,0,0,0.1)' }}>
                             <div className="icon-inner tk"><i className="fab fa-tiktok"></i></div>
+                        </a>
+                      )}
+
+                      {settings?.instagram_url && (
+                        <a href={settings.instagram_url} target="_blank" className="contact-icon-item" title="Instagram" style={{ color: 'var(--dark-black)', borderColor: 'rgba(0,0,0,0.1)' }}>
+                            <div className="icon-inner ig"><i className="fab fa-instagram"></i></div>
                         </a>
                       )}
                   </div>
