@@ -96,6 +96,31 @@ export default function AboutForm({ initialAbout }: { initialAbout: any }) {
             </div>
         </div>
 
+        <div style={{ background: 'rgba(0,0,0,0.3)', padding: '20px', borderRadius: '10px', border: '1px solid #222' }}>
+            <h4 style={{ color: '#DBC07E', marginBottom: '15px' }}>Brand Values (القيم)</h4>
+            <div style={{ display: 'grid', gap: '15px' }}>
+              {[0, 1, 2, 3].map((i) => (
+                <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', alignItems: 'center' }}>
+                  <input 
+                    name={`value_en_${i}`} 
+                    defaultValue={initialAbout?.values?.[i]?.text_en || ''} 
+                    placeholder={`Value ${i+1} (EN)`} 
+                    required 
+                    style={{ padding: '10px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '6px' }} 
+                  />
+                  <input 
+                    name={`value_ar_${i}`} 
+                    defaultValue={initialAbout?.values?.[i]?.text_ar || ''} 
+                    placeholder={`القيمة ${i+1} (AR)`} 
+                    required 
+                    dir="rtl"
+                    style={{ padding: '10px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '6px', textAlign: 'right', fontFamily: 'var(--font-arabic)' }} 
+                  />
+                </div>
+              ))}
+            </div>
+        </div>
+
         <div style={{ display: 'grid', gap: '10px', marginTop: '10px' }}>
             <label style={{ color: '#aaa', fontSize: '13px' }}>Upload About Section Image</label>
             <input type="file" name="media_file" accept="image/*" style={{ padding: '10px', background: '#111', border: '1px solid #333', color: '#fff', borderRadius: '8px' }} />

@@ -27,7 +27,7 @@ type GalleryItemWithCategory = Prisma.GalleryItemGetPayload<{
 
 type HomePageData = [
   Hero | null,
-  About | null,
+  any, // About | null,
   Settings | null,
   Service[],
   GalleryItemWithCategory[],
@@ -58,7 +58,7 @@ export default async function HomePage() {
         footerDb,
     ]: HomePageData = await prisma.$transaction([
         prisma.hero.findFirst(),
-        prisma.about.findFirst(),
+        prisma.about.findFirst({ include: { values: true } }),
         prisma.settings.findFirst(),
         prisma.service.findMany({ where: { isVisible: true }, orderBy: { order: 'asc' } }),
         prisma.galleryItem.findMany({ include: { category: true }, where: { isVisible: true }, orderBy: { order: 'asc' } }),
@@ -396,10 +396,18 @@ export default async function HomePage() {
                       <p className="en-text" style={{ fontSize: '18px', color: 'var(--text-main)' }}>{about?.content_en}</p>
                       
                       <div className="brand-values" style={{ marginTop: '40px' }}>
-                          <div className="value-item" style={{ color: 'var(--dark-black)' }}><i className="fas fa-check" style={{ color: 'var(--primary-gold)' }}></i> <span>Creativity</span></div>
-                          <div className="value-item" style={{ color: 'var(--dark-black)' }}><i className="fas fa-check" style={{ color: 'var(--primary-gold)' }}></i> <span>Elegance</span></div>
-                          <div className="value-item" style={{ color: 'var(--dark-black)' }}><i className="fas fa-check" style={{ color: 'var(--primary-gold)' }}></i> <span>Premium Quality</span></div>
-                          <div className="value-item" style={{ color: 'var(--dark-black)' }}><i className="fas fa-check" style={{ color: 'var(--primary-gold)' }}></i> <span>Transformation</span></div>
+                          {about?.values?.length > 0 ? (
+                            about.values.map((v: any, i: number) => (
+                              <div key={i} className="value-item" style={{ color: 'var(--dark-black)' }}><i className="fas fa-check" style={{ color: 'var(--primary-gold)' }}></i> <span><span className="ar-text">{v.text_ar}</span><span className="en-text">{v.text_en}</span></span></div>
+                            ))
+                          ) : (
+                            <>
+                              <div className="value-item" style={{ color: 'var(--dark-black)' }}><i className="fas fa-check" style={{ color: 'var(--primary-gold)' }}></i> <span>Creativity</span></div>
+                              <div className="value-item" style={{ color: 'var(--dark-black)' }}><i className="fas fa-check" style={{ color: 'var(--primary-gold)' }}></i> <span>Elegance</span></div>
+                              <div className="value-item" style={{ color: 'var(--dark-black)' }}><i className="fas fa-check" style={{ color: 'var(--primary-gold)' }}></i> <span>Premium Quality</span></div>
+                              <div className="value-item" style={{ color: 'var(--dark-black)' }}><i className="fas fa-check" style={{ color: 'var(--primary-gold)' }}></i> <span>Transformation</span></div>
+                            </>
+                          )}
                       </div>
                   </div>
                   <div className="about-visual" style={{ background: 'var(--bg-public-alt)', borderColor: 'rgba(212, 175, 55, 0.2)' }}>

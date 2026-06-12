@@ -48,6 +48,21 @@ export async function POST(request: NextRequest) {
       create: { id: 1, ...data }
     })
 
+    // Update the 4 values
+    const valueEn0 = formData.get('value_en_0') as string
+    const valueAr0 = formData.get('value_ar_0') as string
+    if (valueEn0 && valueAr0) {
+      await prisma.value.deleteMany({ where: { aboutId: 1 } })
+      await prisma.value.createMany({
+        data: [
+          { aboutId: 1, text_en: formData.get('value_en_0') as string || '', text_ar: formData.get('value_ar_0') as string || '' },
+          { aboutId: 1, text_en: formData.get('value_en_1') as string || '', text_ar: formData.get('value_ar_1') as string || '' },
+          { aboutId: 1, text_en: formData.get('value_en_2') as string || '', text_ar: formData.get('value_ar_2') as string || '' },
+          { aboutId: 1, text_en: formData.get('value_en_3') as string || '', text_ar: formData.get('value_ar_3') as string || '' },
+        ]
+      })
+    }
+
     return NextResponse.json({ success: true, data: updated })
   } catch (err: any) {
     console.error('Failed to update About:', err)
