@@ -18,6 +18,7 @@ import { connection } from 'next/server'
 import Script from 'next/script'
 import ReviewForm from '@/components/ReviewForm'
 import MaintenanceScreen from '@/components/MaintenanceScreen'
+import GallerySection from '@/components/GallerySection'
 
 export const dynamic = 'force-dynamic';
 
@@ -515,57 +516,7 @@ export default async function HomePage() {
       )}
 
       {/* Gallery Section */}
-      <section id="gallery" className="gallery reveal" style={{ background: 'var(--bg-public-main)' }}>
-          <div className="container">
-              <div className="section-title" data-bg-text="PORTFOLIO">
-                  <h2 style={{ color: 'var(--dark-black)' }}>
-                      <span className="ar-text">{navbar?.nav_gallery_ar || "جميع المشاريع"}</span>
-                      <span className="en-text">{navbar?.nav_gallery_en || "All Projects"}</span>
-                  </h2>
-              </div>
-              
-              <div className="gallery-filters">
-                  <button className="filter-btn active" data-filter="all" data-i18n="filter_all" style={{ borderColor: 'var(--bg-badge)', color: 'var(--bg-badge)' }}>الكل / All</button>
-                  {categories.map((cat) => (
-                    <button key={cat.id} className="filter-btn" data-filter={cat.id} style={{ borderColor: 'var(--bg-badge)', color: 'var(--bg-badge)' }}>
-                        <span className="ar-text">{cat.name_ar}</span>
-                        <span className="en-text">{cat.name_en}</span>
-                    </button>
-                  ))}
-              </div>
-
-              <div className="gallery-grid" id="galleryGrid">
-                  {gallery.map((item) => {
-                    const hasTitle = Boolean(item.title_ar || item.title_en);
-                    const hasDesc = Boolean(item.desc_ar || item.desc_en);
-                    
-                    return (
-                      <div key={item.id} className={`gallery-card ${item.categoryId}`} style={{ border: 'none', borderRadius: '0' }}>
-                          <div className="gallery-image">
-                              <img src={item.image_url} alt={item.title_en || "Gallery Image"} />
-                          </div>
-                          {(hasTitle || hasDesc) && (
-                              <div className="gallery-info" style={{ background: 'var(--bg-card)', color: 'var(--text-card)' }}>
-                                  {hasTitle && (
-                                      <h4 style={{ color: 'var(--text-card)', fontFamily: 'var(--font-h1)' }}>
-                                          {item.title_ar && <span className="ar-text">{item.title_ar}</span>}
-                                          {item.title_en && <span className="en-text">{item.title_en}</span>}
-                                      </h4>
-                                  )}
-                                  {hasDesc && (
-                                      <p style={{ color: 'var(--text-card)', opacity: 0.8 }}>
-                                          {item.desc_ar && <span className="ar-text">{item.desc_ar}</span>}
-                                          {item.desc_en && <span className="en-text">{item.desc_en}</span>}
-                                      </p>
-                                  )}
-                              </div>
-                          )}
-                      </div>
-                    );
-                  })}
-              </div>
-          </div>
-      </section>
+      <GallerySection gallery={gallery} categories={categories} navbar={navbar} />
 
       {/* How it Works (Process) */}
       <section id="process" className="how-it-works reveal" style={{ background: 'var(--bg-public-alt)' }}>
