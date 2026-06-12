@@ -10,7 +10,7 @@ interface TestimonialCarouselProps {
 
 export default function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) {
   // Use Embla Carousel without auto-scroll
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, dragFree: false, align: 'center' })
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, dragFree: false, align: 'start' })
   
   const [prevBtnEnabled, setPrevBtnEnabled] = useState(false)
   const [nextBtnEnabled, setNextBtnEnabled] = useState(false)
@@ -133,12 +133,13 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
 
         .embla__container {
           display: flex;
-          gap: 30px;
+          margin-left: -30px;
         }
 
         .embla__slide {
           flex: 0 0 auto;
           min-width: 0;
+          padding-left: 30px;
         }
 
         .testimonial-card {
