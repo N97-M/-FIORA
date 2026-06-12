@@ -19,6 +19,7 @@ import Script from 'next/script'
 import ReviewForm from '@/components/ReviewForm'
 import MaintenanceScreen from '@/components/MaintenanceScreen'
 import GallerySection from '@/components/GallerySection'
+import TestimonialCarousel from '@/components/TestimonialCarousel'
 
 export const dynamic = 'force-dynamic';
 
@@ -565,22 +566,8 @@ export default async function HomePage() {
                           <span className="en-text">{navbar?.nav_testimonials_en || "What Our Clients Say"}</span>
                       </h2>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px' }}>
-                      {testimonials.map(t => (
-                          <div key={t.id} style={{ background: 'var(--bg-card)', padding: '40px', border: '1px solid rgba(0,0,0,0.05)', textAlign: 'center' }}>
-                              <div style={{ color: 'var(--primary-gold)', fontSize: '24px', marginBottom: '20px' }}>
-                                  {"★".repeat(t.rating)}{"☆".repeat(5-t.rating)}
-                              </div>
-                              <p style={{ fontSize: '16px', color: 'var(--text-card)', opacity: 0.9, fontStyle: 'italic', marginBottom: '20px', lineHeight: '1.8' }}>
-                                  <span className="en-text">&quot;{t.content_en}&quot;</span>
-                                  <span className="ar-text">&quot;{t.content_ar}&quot;</span>
-                              </p>
-                              <h4 style={{ fontFamily: 'var(--font-h1)', fontSize: '18px', color: 'var(--text-card)' }}>
-                                  <span className="en-text">- {t.client_name_en}</span>
-                                  <span className="ar-text">- {t.client_name_ar}</span>
-                              </h4>
-                          </div>
-                      ))}
+                  <div style={{ marginTop: '50px', marginBottom: '50px' }}>
+                      <TestimonialCarousel testimonials={testimonials} />
                   </div>
                   <ReviewForm />
               </div>
