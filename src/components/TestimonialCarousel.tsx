@@ -67,6 +67,7 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
         .embla {
           overflow: hidden;
           cursor: grab;
+          touch-action: pan-y pinch-zoom;
         }
 
         .embla:active {
