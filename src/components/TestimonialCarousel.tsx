@@ -9,14 +9,49 @@ interface TestimonialCarouselProps {
 }
 
 export default function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) {
-  // Use Embla Carousel without auto-scroll
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, dragFree: false, align: 'start' })
+  const [direction, setDirection] = useState<'ltr' | 'rtl'>('rtl') // Default to match HTML
+
+  useEffect(() => {
+    // Initial check
+    setDirection(document.documentElement.dir === 'rtl' ? 'rtl' : 'ltr')
+
+    // Observe HTML tag for language switches
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'dir') {
+          setDirection(document.documentElement.dir === 'rtl' ? 'rtl' : 'ltr')
+        }
+      })
+    })
+
+    observer.observe(document.documentElement, { attributes: true })
+
+    return () => observer.disconnect()
+  }, [])
+
+  // Use Embla Carousel without auto-scroll, applying the dynamic direction
+  const [emblaRef, emblaApi] = useEmblaCarousel({ 
+    loop: false, 
+    dragFree: false, 
+    align: 'start',
+    direction
+  })
   
   const [prevBtnEnabled, setPrevBtnEnabled] = useState(false)
   const [nextBtnEnabled, setNextBtnEnabled] = useState(false)
 
-  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi])
-  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi])
+  const handleLeftClick = useCallback(() => {
+    if (direction === 'rtl') emblaApi?.scrollNext()
+    else emblaApi?.scrollPrev()
+  }, [emblaApi, direction])
+
+  const handleRightClick = useCallback(() => {
+    if (direction === 'rtl') emblaApi?.scrollPrev()
+    else emblaApi?.scrollNext()
+  }, [emblaApi, direction])
+
+  const leftBtnDisabled = direction === 'rtl' ? !nextBtnEnabled : !prevBtnEnabled
+  const rightBtnDisabled = direction === 'rtl' ? !prevBtnEnabled : !nextBtnEnabled
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return
@@ -36,9 +71,9 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
       {/* Left Navigation Button */}
       <button 
         className="carousel-btn prev-btn" 
-        onClick={scrollPrev} 
-        disabled={!prevBtnEnabled}
-        aria-label="Previous slide"
+        onClick={handleLeftClick} 
+        disabled={leftBtnDisabled}
+        aria-label="Scroll left"
       >
         <i className="fas fa-chevron-left"></i>
       </button>
@@ -68,9 +103,9 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
       {/* Right Navigation Button */}
       <button 
         className="carousel-btn next-btn" 
-        onClick={scrollNext} 
-        disabled={!nextBtnEnabled}
-        aria-label="Next slide"
+        onClick={handleRightClick} 
+        disabled={rightBtnDisabled}
+        aria-label="Scroll right"
       >
         <i className="fas fa-chevron-right"></i>
       </button>
