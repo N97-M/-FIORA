@@ -1,40 +1,52 @@
 'use client'
 
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Testimonial } from '@prisma/client'
 import useEmblaCarousel from 'embla-carousel-react'
-import AutoScroll from 'embla-carousel-auto-scroll'
 
 interface TestimonialCarouselProps {
   testimonials: Testimonial[]
 }
 
 export default function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) {
-  // Embla Carousel hook with loop enabled and the AutoScroll plugin
-  const [emblaRef] = useEmblaCarousel(
-    { loop: true, dragFree: true },
-    [
-      AutoScroll({
-        playOnInit: true,
-        speed: 1,
-        stopOnInteraction: false, // Keeps scrolling even after the user drags it!
-        stopOnMouseEnter: true    // Pauses when hovering to read
-      })
-    ]
-  )
+  // Use Embla Carousel without auto-scroll
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, dragFree: false, align: 'center' })
+  
+  const [prevBtnEnabled, setPrevBtnEnabled] = useState(false)
+  const [nextBtnEnabled, setNextBtnEnabled] = useState(false)
 
-  // Duplicate slightly to ensure enough items to fill the track without flickering,
-  // though Embla handles looping very well, adding a few duplicates helps if there are only 1 or 2 reviews.
-  const displayItems = testimonials.length < 5 
-    ? [...testimonials, ...testimonials, ...testimonials, ...testimonials]
-    : testimonials
+  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi])
+  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi])
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return
+    setPrevBtnEnabled(emblaApi.canScrollPrev())
+    setNextBtnEnabled(emblaApi.canScrollNext())
+  }, [emblaApi])
+
+  useEffect(() => {
+    if (!emblaApi) return
+    onSelect()
+    emblaApi.on('select', onSelect)
+    emblaApi.on('reInit', onSelect)
+  }, [emblaApi, onSelect])
 
   return (
-    <div className="testimonial-marquee-wrapper">
+    <div className="testimonial-carousel-container">
+      {/* Left Navigation Button */}
+      <button 
+        className="carousel-btn prev-btn" 
+        onClick={scrollPrev} 
+        disabled={!prevBtnEnabled}
+        aria-label="Previous slide"
+      >
+        <i className="fas fa-chevron-left"></i>
+      </button>
+
       <div className="embla" ref={emblaRef}>
         <div className="embla__container">
-          {displayItems.map((t, idx) => (
-            <div key={`${t.id}-${idx}`} className="embla__slide">
+          {testimonials.map((t) => (
+            <div key={t.id} className="embla__slide">
               <div className="testimonial-card">
                 <div className="testimonial-stars">
                   {"★".repeat(t.rating)}{"☆".repeat(5 - t.rating)}
@@ -53,31 +65,75 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
         </div>
       </div>
 
+      {/* Right Navigation Button */}
+      <button 
+        className="carousel-btn next-btn" 
+        onClick={scrollNext} 
+        disabled={!nextBtnEnabled}
+        aria-label="Next slide"
+      >
+        <i className="fas fa-chevron-right"></i>
+      </button>
+
       <style jsx>{`
-        .testimonial-marquee-wrapper {
-          overflow: hidden;
-          width: 100%;
+        .testimonial-carousel-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
           position: relative;
-          padding: 20px 0;
-          /* Subtle fade effect on the left and right edges */
-          mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-          -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+          width: 100%;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 20px 50px; /* Space for buttons */
+        }
+
+        .carousel-btn {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          background: var(--bg-card);
+          border: 1px solid rgba(219, 192, 126, 0.4);
+          color: var(--primary-gold);
+          font-size: 18px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          z-index: 10;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .carousel-btn:hover:not(:disabled) {
+          background: var(--primary-gold);
+          color: #fff;
+        }
+
+        .carousel-btn:disabled {
+          opacity: 0.3;
+          cursor: not-allowed;
+        }
+
+        .prev-btn {
+          left: 0;
+        }
+
+        .next-btn {
+          right: 0;
         }
 
         .embla {
           overflow: hidden;
-          cursor: grab;
+          width: 100%;
           touch-action: pan-y pinch-zoom;
-        }
-
-        .embla:active {
-          cursor: grabbing;
         }
 
         .embla__container {
           display: flex;
           gap: 30px;
-          margin-left: 15px; /* Offset for gap */
         }
 
         .embla__slide {
@@ -97,13 +153,13 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
           display: flex;
           flex-direction: column;
           justify-content: center;
-          user-select: none; /* Prevents text selection while dragging */
+          user-select: none;
         }
 
         .testimonial-card:hover {
           transform: translateY(-5px) scale(1.02);
           box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
-          border-color: rgba(219, 192, 126, 0.3); /* Subtle gold border on hover */
+          border-color: rgba(219, 192, 126, 0.3);
         }
 
         .testimonial-stars {
@@ -121,7 +177,7 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
           margin-bottom: 20px;
           line-height: 1.6;
           display: -webkit-box;
-          -webkit-line-clamp: 4;
+          -webkit-line-clamp: 5;
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
@@ -134,6 +190,19 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
         }
 
         @media (max-width: 768px) {
+          .testimonial-carousel-container {
+            padding: 20px 40px; /* Less padding on mobile */
+          }
+          
+          .carousel-btn {
+            width: 35px;
+            height: 35px;
+            font-size: 14px;
+          }
+
+          .prev-btn { left: 0px; }
+          .next-btn { right: 0px; }
+
           .testimonial-card {
             width: 280px;
             padding: 20px;
